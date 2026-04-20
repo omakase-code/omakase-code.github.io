@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omakase — Trust the Chef</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --cream:#f7f2ea;
+  --cream-dark:#ede6d8;
+  --ink:#1e1a14;
+  --ink-light:#6b6355;
+  --ink-faint:#a09880;
+  --gold:#8a7a60;
+  --gold-light:#c4b49a;
+  --rule:#d8d0c0;
+  --serif:'EB Garamond',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.7;
+  min-height:100vh;
+}
+
+/* NAV */
+nav{
+  position:sticky;top:0;z-index:100;
+  background:var(--cream);
+  border-bottom:0.5px solid var(--rule);
+  padding:0 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:56px;
+}
+.nav-wordmark{
+  font-family:var(--serif);
+  font-size:17px;
+  letter-spacing:0.15em;
+  color:var(--ink);
+  cursor:pointer;
+}
+.nav-links{display:flex;gap:28px;align-items:center;}
+.nav-link{
+  font-family:var(--sans);font-size:13px;font-weight:400;
+  color:var(--ink-light);cursor:pointer;
+  transition:color 0.15s;text-decoration:none;
+  letter-spacing:0.02em;border:none;background:none;
+}
+.nav-link:hover,.nav-link.active{color:var(--ink);}
+.nav-link.active{border-bottom:1px solid var(--ink);padding-bottom:1px;}
+.nav-apply{
+  font-family:var(--sans);font-size:12px;font-weight:500;
+  background:var(--ink);color:var(--cream);
+  padding:7px 18px;border-radius:2px;cursor:pointer;
+  transition:opacity 0.15s;letter-spacing:0.04em;
+  text-decoration:none;border:none;
+}
+.nav-apply:hover{opacity:0.8;}
+
+/* PAGES */
+.page{display:none;animation:fadein 0.3s ease;}
+.page.active{display:block;}
+@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+/* HOME */
+.hero{
+  min-height:calc(100vh - 56px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 40px;text-align:center;
+  position:relative;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 39px,var(--rule) 39px,var(--rule) 40px);
+  opacity:0.25;pointer-events:none;
+}
+.hero-kicker{
+  font-family:var(--sans);font-size:11px;font-weight:500;
+  letter-spacing:0.22em;color:var(--ink-faint);
+  margin-bottom:28px;text-transform:uppercase;
+  position:relative;
+}
+.hero-title{
+  font-family:var(--serif);font-size:clamp(52px,8vw,88px);
+  font-weight:400;line-height:1.05;color:var(--ink);
+  margin-bottom:20px;position:relative;
+}
+.hero-title em{color:var(--gold);font-style:italic;}
+.hero-sub{
+  font-family:var(--serif);font-size:clamp(17px,2vw,22px);
+  color:var(--ink-light);font-style:italic;
+  max-width:560px;line-height:1.6;margin-bottom:48px;
+  position:relative;
+}
+.hero-rule{width:40px;height:0.5px;background:var(--rule);margin:0 auto 40px;position:relative;}
+
+.apply-btn{
+  display:inline-block;
+  font-family:var(--sans);font-size:13px;font-weight:500;
+  letter-spacing:0.06em;
+  background:var(--ink);color:var(--cream);
+  padding:14px 36px;border-radius:2px;
+  cursor:pointer;transition:opacity 0.15s;
+  text-decoration:none;margin-bottom:12px;
+  position:relative;border:none;
+}
+.apply-btn:hover{opacity:0.8;}
+.apply-sub{
+  font-family:var(--sans);font-size:12px;
+  color:var(--ink-faint);letter-spacing:0.04em;
+  position:relative;
+}
+
+.how-section{
+  background:var(--cream-dark);
+  border-top:0.5px solid var(--rule);
+  border-bottom:0.5px solid var(--rule);
+  padding:80px 40px;
+}
+.how-inner{max-width:800px;margin:0 auto;}
+.section-label{
+  font-family:var(--sans);font-size:10px;font-weight:500;
+  letter-spacing:0.22em;color:var(--ink-faint);
+  text-transform:uppercase;margin-bottom:40px;
+}
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px;}
+.how-num{
+  font-family:var(--serif);font-size:36px;color:var(--gold-light);
+  margin-bottom:12px;line-height:1;
+}
+.how-title{
+  font-family:var(--serif);font-size:18px;color:var(--ink);
+  margin-bottom:8px;
+}
+.how-body{font-family:var(--sans);font-size:13px;color:var(--ink-light);line-height:1.65;}
+
+.contrast-section{
+  padding:80px 40px;max-width:700px;margin:0 auto;
+  text-align:center;
+}
+.contrast-muted{
+  font-family:var(--serif);font-size:19px;
+  color:var(--ink-faint);font-style:italic;
+  margin-bottom:8px;
+}
+.contrast-rule-line{width:60px;height:0.5px;background:var(--rule);margin:20px auto;}
+.contrast-hero-text{
+  font-family:var(--serif);font-size:clamp(28px,4vw,42px);
+  color:var(--ink);line-height:1.2;margin-bottom:8px;
+}
+.contrast-gold{color:var(--gold);font-style:italic;}
+
+.dates-section{
+  background:var(--ink);padding:60px 40px;text-align:center;
+}
+.dates-inner{max-width:600px;margin:0 auto;}
+.dates-label{
+  font-family:var(--sans);font-size:10px;font-weight:500;
+  letter-spacing:0.22em;color:var(--gold-light);
+  text-transform:uppercase;margin-bottom:32px;
+}
+.dates-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px;margin-bottom:32px;}
+.date-item{border-top:0.5px solid #333;padding-top:16px;}
+.date-val{
+  font-family:var(--serif);font-size:22px;color:var(--cream);
+  margin-bottom:4px;
+}
+.date-label{font-family:var(--sans);font-size:11px;color:var(--gold-light);letter-spacing:0.08em;}
+.dates-apply{
+  display:inline-block;
+  font-family:var(--sans);font-size:12px;font-weight:500;
+  letter-spacing:0.06em;
+  background:transparent;color:var(--cream);
+  border:0.5px solid #555;
+  padding:12px 32px;border-radius:2px;
+  cursor:pointer;transition:border-color 0.15s;
+  text-decoration:none;
+}
+.dates-apply:hover{border-color:var(--gold-light);}
+
+/* INNER PAGES */
+.inner-page{max-width:680px;margin:0 auto;padding:72px 40px;}
+.inner-title{
+  font-family:var(--serif);font-size:clamp(36px,5vw,52px);
+  font-weight:400;color:var(--ink);margin-bottom:8px;line-height:1.1;
+}
+.inner-sub{
+  font-family:var(--serif);font-size:17px;color:var(--gold);
+  font-style:italic;margin-bottom:40px;
+}
+.inner-rule{height:0.5px;background:var(--rule);margin-bottom:40px;}
+
+.prose-h2{
+  font-family:var(--serif);font-size:22px;color:var(--ink);
+  margin-bottom:8px;margin-top:36px;
+}
+.prose-h3{
+  font-family:var(--sans);font-size:12px;font-weight:500;
+  letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:8px;margin-top:24px;
+}
+.prose-p{
+  font-family:var(--sans);font-size:14px;color:var(--ink-light);
+  line-height:1.75;margin-bottom:14px;
+}
+.prose-ul{margin:0 0 14px 0;padding:0;}
+.prose-ul li{
+  font-family:var(--sans);font-size:14px;color:var(--ink-light);
+  line-height:1.75;margin-bottom:6px;list-style:none;padding-left:20px;
+  position:relative;
+}
+.prose-ul li::before{content:'\2014';position:absolute;left:0;color:var(--gold-light);}
+
+.blockquote{
+  border-left:2px solid var(--gold-light);
+  padding:12px 20px;margin:24px 0;
+}
+.blockquote p{
+  font-family:var(--serif);font-size:18px;color:var(--gold);
+  font-style:italic;line-height:1.6;margin:0;
+}
+
+/* FAQ */
+.faq-item{border-bottom:0.5px solid var(--rule);padding:20px 0;cursor:pointer;}
+.faq-q{
+  font-family:var(--serif);font-size:18px;color:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.faq-icon{
+  font-size:20px;color:var(--gold);flex-shrink:0;
+  transition:transform 0.2s;font-style:normal;display:inline-block;
+}
+.faq-item.open .faq-icon{transform:rotate(45deg);}
+.faq-a{
+  font-family:var(--sans);font-size:14px;color:var(--ink-light);
+  line-height:1.75;padding-top:14px;display:none;
+}
+.faq-item.open .faq-a{display:block;}
+
+/* SAFETY CARDS */
+.safety-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;}
+.safety-card{
+  background:var(--cream-dark);
+  border:0.5px solid var(--rule);
+  border-radius:2px;padding:20px;
+}
+.safety-card-icon{font-size:13px;color:var(--gold);margin-bottom:8px;font-family:var(--serif);font-style:italic;}
+.safety-card-title{font-family:var(--serif);font-size:16px;color:var(--ink);margin-bottom:6px;}
+.safety-card-body{font-family:var(--sans);font-size:13px;color:var(--ink-light);line-height:1.65;}
+
+/* ABOUT */
+.about-pull{
+  font-family:var(--serif);font-size:clamp(20px,2.5vw,28px);
+  color:var(--ink);line-height:1.4;margin:32px 0;
+  border-left:2px solid var(--gold-light);padding-left:24px;
+}
+
+/* FOOTER */
+footer{
+  background:var(--cream-dark);
+  border-top:0.5px solid var(--rule);
+  padding:32px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:12px;
+}
+.footer-word{font-family:var(--serif);font-size:15px;color:var(--ink-faint);letter-spacing:0.1em;}
+.footer-links{display:flex;gap:20px;}
+.footer-link{font-family:var(--sans);font-size:12px;color:var(--ink-faint);cursor:pointer;text-decoration:none;background:none;border:none;}
+.footer-link:hover{color:var(--ink);}
+.footer-note{font-family:var(--sans);font-size:11px;color:var(--ink-faint);width:100%;margin-top:4px;}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  nav{padding:0 20px;}
+  .nav-links{gap:14px;}
+  .nav-link{font-size:12px;}
+  .how-grid{grid-template-columns:1fr;}
+  .safety-grid{grid-template-columns:1fr;}
+  .dates-grid{grid-template-columns:1fr;}
+  .hero{padding:60px 24px;}
+  .how-section,.contrast-section{padding:60px 24px;}
+  .inner-page{padding:48px 24px;}
+  footer{padding:24px 20px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-wordmark" onclick="show('home')">OMAKASE</div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="show('home')" id="nav-home">Home</button>
+    <button class="nav-link" onclick="show('about')" id="nav-about">About</button>
+    <button class="nav-link" onclick="show('faq')" id="nav-faq">FAQ</button>
+    <button class="nav-link" onclick="show('safety')" id="nav-safety">Safety</button>
+    <button class="nav-link" onclick="show('privacy')" id="nav-privacy">Privacy</button>
+    <button class="nav-apply" onclick="applyNow()">Apply &rarr;</button>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-kicker">Season Zero &middot; Western University &middot; April 2026</div>
+    <h1 class="hero-title">Trust<br>the <em>chef.</em></h1>
+    <div class="hero-rule"></div>
+    <p class="hero-sub">One introduction, made by something that read every word you wrote.</p>
+    <button class="apply-btn" onclick="applyNow()">Apply for a pairing &rarr;</button>
+    <div class="apply-sub">Applications close Sunday April 26 at 11:59pm &middot; Pairings revealed May 1st</div>
+  </div>
+
+  <div class="how-section">
+    <div class="how-inner">
+      <div class="section-label">How it works</div>
+      <div class="how-grid">
+        <div>
+          <div class="how-num">I</div>
+          <div class="how-title">Apply</div>
+          <div class="how-body">Fill out a real application &mdash; your values, your lifestyle, three questions about who you actually are. Takes about ten minutes.</div>
+        </div>
+        <div>
+          <div class="how-num">II</div>
+          <div class="how-title">The kitchen works</div>
+          <div class="how-body">Omakase's matching system reads everything you wrote and finds one person it's genuinely confident about. No swiping. No ranking by photo.</div>
+        </div>
+        <div>
+          <div class="how-num">III</div>
+          <div class="how-title">Your pairing arrives</div>
+          <div class="how-body">On May 1st, you receive one introduction. What happens next is up to you &mdash; coffee before exams end, a summer of talking, or waiting until September.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contrast-section">
+    <div class="contrast-muted">On Tinder you swipe.</div>
+    <div class="contrast-muted">On Hinge you scroll.</div>
+    <div class="contrast-rule-line"></div>
+    <div class="contrast-hero-text">On Omakase</div>
+    <div class="contrast-hero-text">you trust</div>
+    <div class="contrast-hero-text"><span class="contrast-gold">the chef.</span></div>
+  </div>
+
+  <div class="dates-section">
+    <div class="dates-inner">
+      <div class="dates-label">Season Zero &middot; Key dates</div>
+      <div class="dates-grid">
+        <div class="date-item">
+          <div class="date-val">Apr 26</div>
+          <div class="date-label">Applications close &middot; 11:59pm</div>
+        </div>
+        <div class="date-item">
+          <div class="date-val">Apr 27&ndash;30</div>
+          <div class="date-label">The kitchen works</div>
+        </div>
+        <div class="date-item">
+          <div class="date-val">May 1st</div>
+          <div class="date-label">Pairings revealed</div>
+        </div>
+      </div>
+      <button class="dates-apply" onclick="applyNow()">Apply now &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="inner-page">
+    <h1 class="inner-title">About Omakase</h1>
+    <p class="inner-sub">Built by a Western student, for Asian students at Western.</p>
+    <div class="inner-rule"></div>
+
+    <div class="about-pull">
+      Instead of a pool of profiles to scroll through, you submit a real application. Omakase's matching system processes everything you wrote and makes one introduction it's genuinely confident about.
+    </div>
+
+    <p class="prose-p">The idea is borrowed from the omakase dining experience. At a great omakase restaurant, you don't order. You don't scroll through a menu. You sit down, you trust the chef, and what arrives is something you wouldn't have chosen for yourself &mdash; but couldn't imagine not having.</p>
+    <p class="prose-p">That's what we're trying to build. An AI matching system that reads what you actually wrote &mdash; your values, your lifestyle, three honest answers &mdash; and makes one introduction that it would stake its reputation on. No swiping. No ranking by who's most active. Just the kitchen, doing what it does.</p>
+
+    <h2 class="prose-h2">Season Zero</h2>
+    <p class="prose-p">What's launching now is Season Zero &mdash; a small, intentional first run before the official launch in September. It's free, it's Western-only, and it's deliberately limited. The goal is to make real pairings, learn what works, and use everything we learn to build Season One properly.</p>
+    <p class="prose-p">Season One follows in September &mdash; still at Western, more clubs, more members, shaped entirely by what Season Zero teaches us. Season Zero members get priority placement in Season One.</p>
+
+    <h2 class="prose-h2">On the summer question</h2>
+    <p class="prose-p">Pairings are revealed May 1st, right as the school year closes. Some pairs will meet before everyone leaves. Others will spend the summer getting to know each other without the noise of campus life around them. Others will arrive in September already knowing someone worth knowing.</p>
+    <p class="prose-p">The best introductions don't require perfect timing. They just require two people willing to see where something goes.</p>
+
+    <h2 class="prose-h2">Who we are</h2>
+    <p class="prose-p">Omakase is an independent student-run service built at Western University. It is not affiliated with or endorsed by Western University. Questions? Reach us at privacy@omakase.dating.</p>
+  </div>
+</div>
+
+<!-- FAQ -->
+<div class="page" id="page-faq">
+  <div class="inner-page">
+    <h1 class="inner-title">FAQ</h1>
+    <p class="inner-sub">Everything you need to know.</p>
+    <div class="inner-rule"></div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Who can apply? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Season Zero is open to current students at Western University who are members of a participating Asian student club &mdash; including CAISA, CSA, TSA, VSA, KSA, and others. You must be 18 or older to apply.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How does the matching work? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Omakase's matching system reads your full application &mdash; your values, your lifestyle, and your three written answers. It uses a combination of structured compatibility scoring and natural language analysis to find genuine compatibility, not just surface-level similarities. Hard filters (your stated preferences and dealbreakers) are applied first. Then the system weighs values alignment, lifestyle compatibility, and personality texture to find one pairing it's confident about.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Is it free? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Yes. Season Zero is completely free. We may introduce an optional paid tier for Season One in September, but participating in a pairing will always have a free option.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What if everyone leaves for summer before we meet? <span class="faq-icon">+</span></div>
+      <div class="faq-a">That's actually part of the design. Some Season Zero pairs will meet before exams end. Others will spend the summer getting to know each other without the noise of campus life. Others will arrive in September already knowing someone worth knowing. The best introductions don't need perfect timing &mdash; they just need to happen.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Do I have to accept my pairing? <span class="faq-icon">+</span></div>
+      <div class="faq-a">No. When you receive your pairing reveal on May 1st, both parties have 72 hours to accept before the introduction closes. If either person declines, no contact information is shared. You are never obligated to proceed.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Who sees my application? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Your application is processed by Omakase's matching system. Season Zero is operated by one person &mdash; Cosmo, a Western student. No one outside of Omakase will ever see your application responses. Your social media handles, if provided, are shared only with your confirmed match after both parties accept the introduction.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I withdraw my application? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Yes, at any time before the application window closes on Sunday April 26 at 11:59pm. After that point the matching process will be running. To withdraw, email privacy@omakase.dating.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What happens if I can't be matched? <span class="faq-icon">+</span></div>
+      <div class="faq-a">We aim to match every applicant. If we're unable to find a compatible pairing for you in Season Zero, we'll notify you by email before May 1st and carry you forward as a priority match for Season One in September.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Is Omakase affiliated with Western University? <span class="faq-icon">+</span></div>
+      <div class="faq-a">No. Omakase is an independent student-run service and is not affiliated with, endorsed by, or operated under the authority of Western University.</div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What's coming in Season One? <span class="faq-icon">+</span></div>
+      <div class="faq-a">Season One launches in September 2026 &mdash; still at Western, open to more clubs and more members, shaped entirely by what Season Zero teaches us. Season Zero members get priority placement.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SAFETY -->
+<div class="page" id="page-safety">
+  <div class="inner-page">
+    <h1 class="inner-title">Safety</h1>
+    <p class="inner-sub">Your wellbeing comes first.</p>
+    <div class="inner-rule"></div>
+
+    <p class="prose-p">Omakase takes the safety of every participant seriously. This page outlines our safety commitments and what to do if something doesn't feel right.</p>
+
+    <div class="safety-grid">
+      <div class="safety-card">
+        <div class="safety-card-icon">Verified community</div>
+        <div class="safety-card-title">University email required</div>
+        <div class="safety-card-body">Every applicant must verify using a university email address. This creates a layer of accountability that open platforms don't have.</div>
+      </div>
+      <div class="safety-card">
+        <div class="safety-card-icon">Club-rooted</div>
+        <div class="safety-card-title">Community membership required</div>
+        <div class="safety-card-body">Applicants must be members of a participating Asian student club. You're being introduced to someone already part of your broader community.</div>
+      </div>
+      <div class="safety-card">
+        <div class="safety-card-icon">Mutual consent</div>
+        <div class="safety-card-title">Both parties must accept</div>
+        <div class="safety-card-body">No contact information is shared until both parties explicitly accept the introduction. You are never obligated to proceed with any pairing.</div>
+      </div>
+      <div class="safety-card">
+        <div class="safety-card-icon">Age verified</div>
+        <div class="safety-card-title">18+ only</div>
+        <div class="safety-card-body">All applicants confirm they are 18 or older. Applications from individuals under 18 are removed from the matching pool.</div>
+      </div>
+    </div>
+
+    <h2 class="prose-h2">Before you meet</h2>
+    <ul class="prose-ul">
+      <li>Meet in a public place for your first meeting.</li>
+      <li>Tell a friend where you're going and who you're meeting.</li>
+      <li>Trust your instincts. It's always okay to leave.</li>
+      <li>Don't share personal details like your home address before you feel comfortable.</li>
+    </ul>
+
+    <h2 class="prose-h2">If something doesn't feel right</h2>
+    <p class="prose-p">If your match behaves in a way that makes you uncomfortable &mdash; before or after meeting &mdash; please contact us immediately at privacy@omakase.dating. We take all reports seriously and will respond promptly.</p>
+    <p class="prose-p">For urgent safety concerns, contact Western's Campus Police at 519-661-3300 or call 911.</p>
+    <p class="prose-p">For support, Western's Student Wellness Centre is available at wellness@uwo.ca or 519-661-3030.</p>
+
+    <div class="blockquote">
+      <p>Omakase is not responsible for interactions that occur after a pairing is confirmed, but we are always available to help if something goes wrong. You are never alone in this.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PRIVACY -->
+<div class="page" id="page-privacy">
+  <div class="inner-page">
+    <h1 class="inner-title">Privacy</h1>
+    <p class="inner-sub">Your data is not for sale. Full stop.</p>
+    <div class="inner-rule"></div>
+
+    <div class="blockquote">
+      <p>You trust the chef. We protect the kitchen.</p>
+    </div>
+
+    <h2 class="prose-h2">The short version</h2>
+    <ul class="prose-ul">
+      <li>We collect only what we need to make a thoughtful pairing.</li>
+      <li>Your data is never sold, never shared with advertisers, never used for targeting.</li>
+      <li>For Season Zero we do not collect photos or referrals.</li>
+      <li>Social media handles are optional and shared only with your confirmed match after both parties accept.</li>
+      <li>All application data is anonymized within 90 days of pairings being revealed.</li>
+      <li>You can request deletion of your data at any time by emailing privacy@omakase.dating.</li>
+    </ul>
+
+    <h2 class="prose-h2">What we collect</h2>
+    <div class="prose-h3">Contact information</div>
+    <p class="prose-p">First name and university email. Used to communicate with you and deliver your pairing reveal.</p>
+    <div class="prose-h3">Demographic and background information</div>
+    <p class="prose-p">Year of study, program, age, gender identity, pairing preferences. Ethnic background and immigration status are optional and never used to limit your matches without your instruction.</p>
+    <div class="prose-h3">Values, lifestyle, and preferences</div>
+    <p class="prose-p">Scale responses and multiple-choice answers covering religion, family, ambition, social energy, lifestyle, love language, relationship intent, and dealbreakers.</p>
+    <div class="prose-h3">Open-ended responses</div>
+    <p class="prose-p">Three written answers processed by Omakase's matching system using natural language analysis.</p>
+    <div class="prose-h3">Social media handles (optional)</div>
+    <p class="prose-p">Instagram and TikTok. Shared only with your confirmed match after both parties accept the introduction.</p>
+
+    <h2 class="prose-h2">How we protect it</h2>
+    <p class="prose-p">Applications are collected via Typeform, which is SOC 2 Type II certified and GDPR-compliant. All data is accessible only to the Omakase operator. Two-factor authentication is enabled on all accounts that touch participant data.</p>
+    <p class="prose-p">All application data is anonymized within 90 days of pairings being revealed. We delete the link between your identity and your application responses. We do not keep a record of who was matched with whom.</p>
+
+    <h2 class="prose-h2">Your rights</h2>
+    <ul class="prose-ul">
+      <li>Request a copy of your data at any time before the anonymization window closes.</li>
+      <li>Request corrections to your application before April 26 at 11:59pm.</li>
+      <li>Withdraw your application before April 26 at 11:59pm.</li>
+      <li>Request deletion of your data after pairings are revealed.</li>
+      <li>Opt out of all non-essential communications at any time.</li>
+    </ul>
+    <p class="prose-p">To exercise any of these rights, email privacy@omakase.dating. We respond within 30 days.</p>
+
+    <h2 class="prose-h2">Applicable law</h2>
+    <p class="prose-p">Omakase handles personal information in accordance with Canada's Personal Information Protection and Electronic Documents Act (PIPEDA). If you have a concern we are unable to resolve, you may contact the Office of the Privacy Commissioner of Canada at priv.gc.ca.</p>
+    <p class="prose-p">Omakase is not affiliated with Western University. Western has no involvement in the collection or use of participant data.</p>
+    <p class="prose-p">Last updated: April 20, 2026.</p>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-word">OMAKASE</div>
+  <div class="footer-links">
+    <button class="footer-link" onclick="show('about')">About</button>
+    <button class="footer-link" onclick="show('faq')">FAQ</button>
+    <button class="footer-link" onclick="show('safety')">Safety</button>
+    <button class="footer-link" onclick="show('privacy')">Privacy</button>
+  </div>
+  <div class="footer-note">Omakase is an independent student-run service and is not affiliated with or endorsed by Western University. &copy; 2026 Omakase &middot; Season Zero &middot; Western University &middot; privacy@omakase.dating</div>
+</footer>
+
+<script>
+const TYPEFORM_URL = 'https://form.typeform.com/to/YOUR_FORM_ID';
+
+function show(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const navEl = document.getElementById('nav-' + page);
+  if (navEl) navEl.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function applyNow() {
+  window.open(TYPEFORM_URL, '_blank');
+}
+
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>
