@@ -620,7 +620,6 @@ The raw data is handled exclusively by one Western student following the highest
 </footer>
 
 <script>
-const TYPEFORM_URL = 'https://form.typeform.com/to/YOUR_FORM_ID';
 
 function toggleMenu() {
   const menu = document.getElementById('mobile-menu');
@@ -637,7 +636,7 @@ function show(page) {
 }
 
 function applyNow() {
-  window.open(TYPEFORM_URL, '_blank');
+  window.location.href = 'apply.html';
 }
 
 function toggleFaq(el) {
