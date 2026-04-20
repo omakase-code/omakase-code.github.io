@@ -278,18 +278,55 @@ footer{
 .footer-link:hover{color:var(--ink);}
 .footer-note{font-family:var(--sans);font-size:11px;color:var(--ink-faint);width:100%;margin-top:4px;}
 
+/* HAMBURGER */
+.hamburger{
+  display:none;flex-direction:column;justify-content:center;
+  gap:5px;cursor:pointer;padding:8px;background:none;border:none;
+}
+.hamburger span{
+  display:block;width:22px;height:1.5px;
+  background:var(--ink);transition:all 0.2s;
+}
+.mobile-menu{
+  display:none;position:fixed;top:56px;left:0;right:0;
+  background:var(--cream);border-bottom:0.5px solid var(--rule);
+  padding:16px 20px;z-index:99;flex-direction:column;gap:0;
+}
+.mobile-menu.open{display:flex;}
+.mobile-menu-link{
+  font-family:var(--sans);font-size:15px;font-weight:400;
+  color:var(--ink-light);cursor:pointer;background:none;border:none;
+  text-align:left;padding:12px 0;
+  border-bottom:0.5px solid var(--rule);
+}
+.mobile-menu-link:last-child{border-bottom:none;}
+.mobile-menu-link:hover{color:var(--ink);}
+.mobile-apply{
+  margin-top:12px;
+  font-family:var(--sans);font-size:13px;font-weight:500;
+  background:var(--ink);color:var(--cream);
+  padding:12px;border-radius:2px;cursor:pointer;
+  border:none;width:100%;letter-spacing:0.04em;
+}
+
 /* RESPONSIVE */
 @media(max-width:640px){
   nav{padding:0 20px;}
-  .nav-links{gap:14px;}
-  .nav-link{font-size:12px;}
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
   .how-grid{grid-template-columns:1fr;}
   .safety-grid{grid-template-columns:1fr;}
   .dates-grid{grid-template-columns:1fr;}
-  .hero{padding:60px 24px;}
-  .how-section,.contrast-section{padding:60px 24px;}
-  .inner-page{padding:48px 24px;}
-  footer{padding:24px 20px;}
+  .hero{padding:40px 24px;min-height:calc(100vh - 56px);}
+  .hero-kicker{margin-bottom:16px;font-size:10px;}
+  .hero-title{margin-bottom:12px;}
+  .hero-sub{margin-bottom:28px;font-size:16px;}
+  .hero-rule{margin:0 auto 28px;}
+  .how-section,.contrast-section{padding:48px 24px;}
+  .dates-section{padding:48px 24px;}
+  .inner-page{padding:40px 20px;}
+  footer{padding:24px 20px;flex-direction:column;align-items:flex-start;}
+  .contrast-section{padding:48px 24px;}
 }
 </style>
 </head>
@@ -305,7 +342,19 @@ footer{
     <button class="nav-link" onclick="show('privacy')" id="nav-privacy">Privacy</button>
     <button class="nav-apply" onclick="applyNow()">Apply &rarr;</button>
   </div>
+  <button class="hamburger" onclick="toggleMenu()" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-menu-link" onclick="show('home');toggleMenu()">Home</button>
+  <button class="mobile-menu-link" onclick="show('about');toggleMenu()">About</button>
+  <button class="mobile-menu-link" onclick="show('faq');toggleMenu()">FAQ</button>
+  <button class="mobile-menu-link" onclick="show('safety');toggleMenu()">Safety</button>
+  <button class="mobile-menu-link" onclick="show('privacy');toggleMenu()">Privacy</button>
+  <button class="mobile-apply" onclick="applyNow();toggleMenu()">Apply for a pairing &rarr;</button>
+</div>
 
 <!-- HOME -->
 <div class="page active" id="page-home">
@@ -313,7 +362,7 @@ footer{
     <div class="hero-kicker">Season Zero &middot; Western University &middot; April 2026</div>
     <h1 class="hero-title">Trust<br>the <em>chef.</em></h1>
     <div class="hero-rule"></div>
-    <p class="hero-sub">Omakase is an AI-powered matchmaking service built by Western students, for Western students. You share whats important to you, and we provide one genuine connection.</p>
+    <p class="hero-sub">Omakase is an AI-powered matchmaking service built by Western students, for Western students. You share what's important to you, and we provide one genuine connection.</p>
     <button class="apply-btn" onclick="applyNow()">Apply for a pairing &rarr;</button>
     <div class="apply-sub">Applications close Sunday April 26 at 11:59pm &middot; Pairings revealed May 1st</div>
   </div>
@@ -477,7 +526,7 @@ The raw data is handled exclusively by one Western student following the highest
       <div class="safety-card">
         <div class="safety-card-icon">Club-rooted</div>
         <div class="safety-card-title">Community membership driven</div>
-        <div class="safety-card-body">Applicants are be members of a participating student club. You're being introduced to someone already part of your broader community.</div>
+        <div class="safety-card-body">Applicants are members of a participating student club. You're being introduced to someone already part of your broader community.</div>
       </div>
       <div class="safety-card">
         <div class="safety-card-icon">Mutual consent</div>
@@ -520,7 +569,7 @@ The raw data is handled exclusively by one Western student following the highest
     <h2 class="prose-h2">The short version</h2>
     <ul class="prose-ul">
       <li>We collect only what we need to make a thoughtful pairing.</li>
-      <li>Your data is never sold and never shared with advertisers</li>
+      <li>Your data is never sold and never shared with advertisers.</li>
       <li>For Season Zero we do not collect photos or referrals.</li>
       <li>Social media handles are optional and shared only with your confirmed match after both parties accept.</li>
       <li>All application data is anonymized within 90 days of pairings being revealed.</li>
@@ -573,6 +622,11 @@ The raw data is handled exclusively by one Western student following the highest
 
 <script>
 const TYPEFORM_URL = 'https://form.typeform.com/to/YOUR_FORM_ID';
+
+function toggleMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('open');
+}
 
 function show(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
