@@ -69,6 +69,26 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 .sb.on{background:var(--ink);color:var(--cream);border-color:var(--ink);}
 .scale-ends{display:flex;justify-content:space-between;font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-top:8px;}
 
+/* RANK */
+.rank-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+.rank-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border:0.5px solid var(--rule);border-radius:2px;background:var(--cream);cursor:grab;transition:border-color 0.12s;user-select:none;}
+.rank-item:active{cursor:grabbing;}
+.rank-item.dragging{opacity:0.4;}
+.rank-item.drag-over{border-color:var(--gold);}
+.rank-num{font-family:var(--serif);font-size:18px;color:var(--gold-light);min-width:20px;}
+.rank-label{font-family:var(--sans);font-size:13px;color:var(--ink-light);flex:1;}
+.rank-handle{color:var(--rule);font-size:16px;cursor:grab;}
+
+/* OTP */
+.otp-wrap{display:flex;gap:10px;margin-top:8px;}
+.otp-box{width:44px;height:52px;text-align:center;font-family:var(--serif);font-size:24px;color:var(--ink);background:transparent;border:none;border-bottom:2px solid var(--rule);outline:none;transition:border-color 0.2s;border-radius:0;padding:0;}
+.otp-box:focus{border-bottom-color:var(--gold);}
+.otp-status{font-family:var(--sans);font-size:12px;margin-top:12px;}
+.otp-status.ok{color:#4a9e75;}
+.otp-status.err{color:#c4714a;}
+.btn-resend{font-family:var(--sans);font-size:12px;color:var(--gold);background:none;border:none;cursor:pointer;padding:0;margin-top:8px;display:block;}
+.btn-resend:disabled{color:var(--ink-faint);cursor:default;}
+
 .consent-body{font-family:var(--sans);font-size:13px;color:var(--ink-faint);line-height:1.75;margin-bottom:20px;}
 .consent-row{display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
 .consent-row input{width:16px;height:16px;flex-shrink:0;margin-top:3px;accent-color:var(--ink);cursor:pointer;border:0.5px solid var(--rule);border-bottom:none;padding:0;}
@@ -107,6 +127,8 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
   .scale-row{gap:6px;}
   .sb{padding:11px 2px;font-size:17px;}
   .btn-next{padding:11px 20px;}
+  .otp-wrap{gap:7px;}
+  .otp-box{width:38px;height:46px;font-size:20px;}
 }
 </style>
 </head>
@@ -127,13 +149,13 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
   <div class="welcome-kicker">Season Zero &middot; Western University &middot; April 2026</div>
   <h1 class="welcome-title">Apply for a<br><em>pairing.</em></h1>
   <div class="welcome-div"></div>
-  <p class="welcome-sub">Like any great omakase chef, we ask about your allergies first. Tell us what matters — then trust the kitchen.</p>
+  <p class="welcome-sub">At a great omakase, the chef asks about your allergies before a single dish leaves the kitchen. This form works the same way — tell us your parameters, answer honestly, then leave the rest to us.</p>
   <p class="welcome-meta">About 10 minutes &middot; Closes Sunday April 26 at 11:59pm</p>
 </div></div>
 
 <!-- 1: FIRST NAME -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">The basics &middot; 1 of 8</div>
+  <div class="q-kicker">The basics &middot; 1 of 9</div>
   <div class="q-title">What is your<br>first name?</div>
   <p class="q-hint">This is how we'll address you.</p>
   <input type="text" id="fname" name="first_name" placeholder="Your first name" autocomplete="given-name" onkeydown="ek(event)">
@@ -142,16 +164,34 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 
 <!-- 2: EMAIL -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">The basics &middot; 2 of 8</div>
+  <div class="q-kicker">The basics &middot; 2 of 9</div>
   <div class="q-title">Your university<br>email address</div>
-  <p class="q-hint">Must be your @uwo.ca address. This is how we verify you're a current student and how your pairing arrives May 1st.</p>
+  <p class="q-hint">Must be your @uwo.ca address. We'll send a verification code to confirm you're a current Western student before you continue.</p>
   <input type="email" id="email" name="email" placeholder="you@uwo.ca" autocomplete="email" onkeydown="ek(event)">
   <div class="q-err" id="e2">Please enter a valid @uwo.ca email address.</div>
 </div></div>
 
+<!-- 2b: EMAIL VERIFICATION -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 2 of 9</div>
+  <div class="q-title">Check your<br><em>university email</em></div>
+  <p class="q-hint">We sent a 6-digit code to <span id="email-display" style="color:var(--ink);font-weight:500;"></span>. Enter it below to verify you're a current Western student.</p>
+  <div class="otp-wrap">
+    <input class="otp-box" id="otp0" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" onkeydown="otpKey(event,0)" oninput="otpInput(event,0)">
+    <input class="otp-box" id="otp1" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" onkeydown="otpKey(event,1)" oninput="otpInput(event,1)">
+    <input class="otp-box" id="otp2" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" onkeydown="otpKey(event,2)" oninput="otpInput(event,2)">
+    <input class="otp-box" id="otp3" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" onkeydown="otpKey(event,3)" oninput="otpInput(event,3)">
+    <input class="otp-box" id="otp4" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" onkeydown="otpKey(event,4)" oninput="otpInput(event,4)">
+    <input class="otp-box" id="otp5" maxlength="1" type="text" inputmode="numeric" pattern="[0-9]" onkeydown="otpKey(event,5)" oninput="otpInput(event,5)">
+  </div>
+  <div class="otp-status" id="otp-status"></div>
+  <button class="btn-resend" id="btn-resend" onclick="sendOtp()" disabled>Resend code</button>
+  <div class="q-err" id="e2b">Incorrect code. Please try again.</div>
+</div></div>
+
 <!-- 3: YEAR -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">The basics &middot; 3 of 8</div>
+  <div class="q-kicker">The basics &middot; 3 of 9</div>
   <div class="q-title">Year of study</div>
   <div class="chips" style="margin-top:8px;">
     <label class="chip"><input type="radio" name="year" value="1st year">1st year</label>
@@ -167,7 +207,7 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 
 <!-- 4: AGE -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">The basics &middot; 4 of 8</div>
+  <div class="q-kicker">The basics &middot; 4 of 9</div>
   <div class="q-title">How old are you?</div>
   <p class="q-hint">You must be 18 or older to apply.</p>
   <input type="number" id="age" name="age" min="18" max="99" placeholder="e.g. 21" style="max-width:130px" onkeydown="ek(event)">
@@ -176,14 +216,14 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 
 <!-- 5: PROGRAM -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">The basics &middot; 5 of 8</div>
+  <div class="q-kicker">The basics &middot; 5 of 9</div>
   <div class="q-title">Program or faculty</div>
   <input type="text" name="program" placeholder="e.g. Engineering, Ivey, Social Science" onkeydown="ek(event)">
 </div></div>
 
 <!-- 6: CLUB -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">The basics &middot; 6 of 8</div>
+  <div class="q-kicker">The basics &middot; 6 of 9</div>
   <div class="q-title">Which participating club<br>are you a member of?</div>
   <p class="q-hint">Club membership is required for Season Zero.</p>
   <div class="chips" style="margin-top:8px;">
@@ -193,7 +233,6 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
     <label class="chip"><input type="radio" name="club" value="Vietnamese Students Association">Vietnamese Students Association</label>
     <label class="chip"><input type="radio" name="club" value="Korean Students Association">Korean Students Association</label>
     <label class="chip"><input type="radio" name="club" value="Filipino Students Association">Filipino Students Association</label>
-    <label class="chip"><input type="radio" name="club" value="South Asian Students Association">South Asian Students Association</label>
     <label class="chip"><input type="radio" name="club" value="Japanese Cultural Association">Japanese Cultural Association</label>
     <label class="chip"><input type="radio" name="club" value="Other Asian student club">Other</label>
   </div>
@@ -202,7 +241,7 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 
 <!-- 7: GENDER -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">The basics &middot; 7 of 8</div>
+  <div class="q-kicker">The basics &middot; 7 of 9</div>
   <div class="q-title">I identify as</div>
   <div class="chips" style="margin-top:8px;">
     <label class="chip"><input type="radio" name="gender" value="Man">Man</label>
@@ -215,7 +254,7 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 
 <!-- 8: OPEN TO -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">The basics &middot; 8 of 8</div>
+  <div class="q-kicker">The basics &middot; 8 of 9</div>
   <div class="q-title">I am open to<br>being paired with</div>
   <p class="q-hint">Select all that apply.</p>
   <div class="chips" style="margin-top:8px;">
@@ -227,11 +266,23 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
   <div class="q-err" id="e8">Please select at least one.</div>
 </div></div>
 
-<!-- 9: ETHNICITY -->
+<!-- 9: AGE PREF -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 9 of 9</div>
+  <div class="q-title">Preferred age range<span class="q-opt">optional</span></div>
+  <p class="q-hint">Leave blank if you have no preference.</p>
+  <div style="display:flex;gap:20px;align-items:flex-end;margin-top:8px;">
+    <div style="flex:1;"><div style="font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase;">Min</div><input type="number" name="age_min" placeholder="18" min="18" max="99"></div>
+    <div style="padding-bottom:10px;color:var(--rule);font-size:22px;">—</div>
+    <div style="flex:1;"><div style="font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase;">Max</div><input type="number" name="age_max" placeholder="30" min="18" max="99"></div>
+  </div>
+</div></div>
+
+<!-- 10: ETHNICITY -->
 <div class="slide"><div class="q-wrap">
   <div class="q-kicker">Heritage &middot; 1 of 4</div>
   <div class="q-title">Ethnic background<span class="q-opt">optional</span></div>
-  <p class="q-hint">Never used to limit your matches unless you ask us to. Select all that apply.</p>
+  <p class="q-hint">Select all that apply.</p>
   <div class="chips" style="margin-top:8px;">
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Chinese">Chinese</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Taiwanese">Taiwanese</label>
@@ -239,21 +290,20 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Korean">Korean</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Japanese">Japanese</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Filipino">Filipino</label>
-    <label class="chip"><input type="checkbox" name="ethnicity[]" value="South Asian">South Asian</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Southeast Asian">Southeast Asian</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Mixed">Mixed</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Prefer not to say">Prefer not to say</label>
   </div>
 </div></div>
 
-<!-- 10: LANGUAGES -->
+<!-- 11: LANGUAGES -->
 <div class="slide"><div class="q-wrap">
   <div class="q-kicker">Heritage &middot; 2 of 4</div>
   <div class="q-title">Languages you speak<span class="q-opt">optional</span></div>
   <input type="text" name="languages" placeholder="e.g. Mandarin, English, Cantonese" onkeydown="ek(event)">
 </div></div>
 
-<!-- 11: BACKGROUND -->
+<!-- 12: BACKGROUND -->
 <div class="slide"><div class="q-wrap">
   <div class="q-kicker">Heritage &middot; 3 of 4</div>
   <div class="q-title">Which best describes<br>your background?<span class="q-opt">optional</span></div>
@@ -265,7 +315,7 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
   </div>
 </div></div>
 
-<!-- 12: ETHNIC PREFERENCE -->
+<!-- 13: ETHNIC PREFERENCE -->
 <div class="slide"><div class="q-wrap">
   <div class="q-kicker">Heritage &middot; 4 of 4</div>
   <div class="q-title">Open to matching outside<br>your ethnic background?<span class="q-opt">optional</span></div>
@@ -277,9 +327,9 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
   </div>
 </div></div>
 
-<!-- 13: INTENT -->
+<!-- 14: INTENT -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">What you're looking for &middot; 1 of 3</div>
+  <div class="q-kicker">What you're looking for &middot; 1 of 2</div>
   <div class="q-title">What are you<br>hoping to find?</div>
   <div class="chips" style="margin-top:8px;">
     <label class="chip"><input type="radio" name="intent" value="Something serious">Something serious</label>
@@ -287,26 +337,13 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
     <label class="chip"><input type="radio" name="intent" value="Open to either">Open to either</label>
     <label class="chip"><input type="radio" name="intent" value="Not sure yet">Not sure yet</label>
   </div>
-  <div class="q-err" id="e13">Please select one.</div>
-</div></div>
-
-<!-- 14: AGE RANGE -->
-<div class="slide"><div class="q-wrap">
-  <div class="q-kicker">What you're looking for &middot; 2 of 3</div>
-  <div class="q-title">Preferred age range<span class="q-opt">optional</span></div>
-  <p class="q-hint">Leave blank if you have no preference.</p>
-  <div style="display:flex;gap:20px;align-items:flex-end;margin-top:8px;">
-    <div style="flex:1;"><div style="font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase;">Min</div><input type="number" name="age_min" placeholder="18" min="18" max="99"></div>
-    <div style="padding-bottom:10px;color:var(--rule);font-size:22px;">—</div>
-    <div style="flex:1;"><div style="font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase;">Max</div><input type="number" name="age_max" placeholder="30" min="18" max="99"></div>
-  </div>
+  <div class="q-err" id="e14">Please select one.</div>
 </div></div>
 
 <!-- 15: DEALBREAKERS -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">What you're looking for &middot; 3 of 3</div>
+  <div class="q-kicker">What you're looking for &middot; 2 of 2</div>
   <div class="q-title">Dealbreakers<span class="q-opt">optional</span></div>
-  <p class="q-hint">Completely confidential. Before any AI analysis takes place, your name and email are removed — the matching system sees only your answers, never who you are.</p>
   <textarea name="dealbreakers" placeholder="e.g. must not smoke, religion is important, family values must align..."></textarea>
 </div></div>
 
@@ -365,62 +402,72 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
   </div>
 </div></div>
 
-<!-- 21: LOVE LANGUAGE -->
+<!-- 21: LOVE LANGUAGE GIVING -->
 <div class="slide"><div class="q-wrap">
   <div class="q-kicker">Values &amp; lifestyle &middot; 6 of 6</div>
-  <div class="q-title">My primary<br>love language<span class="q-opt">optional</span></div>
-  <div class="chips" style="margin-top:8px;">
-    <label class="chip"><input type="radio" name="love_language" value="Words of affirmation">Words of affirmation</label>
-    <label class="chip"><input type="radio" name="love_language" value="Quality time">Quality time</label>
-    <label class="chip"><input type="radio" name="love_language" value="Acts of service">Acts of service</label>
-    <label class="chip"><input type="radio" name="love_language" value="Physical touch">Physical touch</label>
-    <label class="chip"><input type="radio" name="love_language" value="Gifts">Gifts</label>
+  <div class="q-title">How you show love —<br>rank from most to least natural<span class="q-opt">optional</span></div>
+  <p class="q-hint">Drag to reorder. Most natural at the top.</p>
+  <div class="rank-list" id="rank-give">
+    <div class="rank-item" draggable="true" data-val="Words of affirmation"><span class="rank-num">1</span><span class="rank-label">Words of affirmation</span><span class="rank-handle">&#8597;</span></div>
+    <div class="rank-item" draggable="true" data-val="Quality time"><span class="rank-num">2</span><span class="rank-label">Quality time</span><span class="rank-handle">&#8597;</span></div>
+    <div class="rank-item" draggable="true" data-val="Acts of service"><span class="rank-num">3</span><span class="rank-label">Acts of service</span><span class="rank-handle">&#8597;</span></div>
+    <div class="rank-item" draggable="true" data-val="Physical touch"><span class="rank-num">4</span><span class="rank-label">Physical touch</span><span class="rank-handle">&#8597;</span></div>
+    <div class="rank-item" draggable="true" data-val="Gifts"><span class="rank-num">5</span><span class="rank-label">Gifts</span><span class="rank-handle">&#8597;</span></div>
   </div>
+  <input type="hidden" name="love_giving" id="hv-give">
 </div></div>
 
-<!-- 22: PROUD OF -->
+<!-- 22: LOVE LANGUAGE RECEIVING -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Values &amp; lifestyle &middot; 6 of 6 continued</div>
+  <div class="q-title">How you receive love —<br>rank from most meaningful<span class="q-opt">optional</span></div>
+  <p class="q-hint">Drag to reorder. Most meaningful at the top.</p>
+  <div class="rank-list" id="rank-recv">
+    <div class="rank-item" draggable="true" data-val="Words of affirmation"><span class="rank-num">1</span><span class="rank-label">Words of affirmation</span><span class="rank-handle">&#8597;</span></div>
+    <div class="rank-item" draggable="true" data-val="Quality time"><span class="rank-num">2</span><span class="rank-label">Quality time</span><span class="rank-handle">&#8597;</span></div>
+    <div class="rank-item" draggable="true" data-val="Acts of service"><span class="rank-num">3</span><span class="rank-label">Acts of service</span><span class="rank-handle">&#8597;</span></div>
+    <div class="rank-item" draggable="true" data-val="Physical touch"><span class="rank-num">4</span><span class="rank-label">Physical touch</span><span class="rank-handle">&#8597;</span></div>
+    <div class="rank-item" draggable="true" data-val="Gifts"><span class="rank-num">5</span><span class="rank-label">Gifts</span><span class="rank-handle">&#8597;</span></div>
+  </div>
+  <input type="hidden" name="love_receiving" id="hv-recv">
+</div></div>
+
+<!-- 23: PROUD OF -->
 <div class="slide"><div class="q-wrap">
   <div class="q-kicker">Three questions &middot; 1 of 3</div>
   <div class="q-title">What's something you're<br><em>genuinely proud of</em> this year?</div>
   <p class="q-hint">Not your GPA or your internship — something that actually meant something to you.</p>
-  <textarea id="ta22" name="proud_of" maxlength="150" oninput="cc(this,'ct22',150)" placeholder="Tell us something real..."></textarea>
-  <div class="char-row"><span class="char-ct" id="ct22">0</span><span class="char-ct">&nbsp;/ 150</span></div>
-  <div class="q-err" id="e22">Please answer this question.</div>
+  <textarea id="ta23" name="proud_of" maxlength="150" oninput="cc(this,'ct23',150)" placeholder="Tell us something real..."></textarea>
+  <div class="char-row"><span class="char-ct" id="ct23">0</span><span class="char-ct">&nbsp;/ 150</span></div>
+  <div class="q-err" id="e23">Please answer this question.</div>
 </div></div>
 
-<!-- 23: IDEAL SUNDAY -->
+<!-- 24: IDEAL SUNDAY -->
 <div class="slide"><div class="q-wrap">
   <div class="q-kicker">Three questions &middot; 2 of 3</div>
   <div class="q-title">Describe your<br><em>ideal Sunday</em> in one sentence.</div>
   <p class="q-hint">There's no right answer. This tells us more than you'd expect.</p>
-  <textarea id="ta23" name="ideal_sunday" maxlength="100" oninput="cc(this,'ct23',100)" placeholder="My ideal Sunday is..." style="min-height:72px"></textarea>
-  <div class="char-row"><span class="char-ct" id="ct23">0</span><span class="char-ct">&nbsp;/ 100</span></div>
-  <div class="q-err" id="e23">Please answer this question.</div>
+  <textarea id="ta24" name="ideal_sunday" maxlength="100" oninput="cc(this,'ct24',100)" placeholder="My ideal Sunday is..." style="min-height:72px"></textarea>
+  <div class="char-row"><span class="char-ct" id="ct24">0</span><span class="char-ct">&nbsp;/ 100</span></div>
+  <div class="q-err" id="e24">Please answer this question.</div>
 </div></div>
 
-<!-- 24: OPINION -->
+<!-- 25: OPINION -->
 <div class="slide"><div class="q-wrap">
   <div class="q-kicker">Three questions &middot; 3 of 3</div>
   <div class="q-title">An opinion most people<br>around you <em>disagree with</em></div>
   <p class="q-hint">Food, life, culture — anything. We're looking for someone who thinks for themselves.</p>
-  <textarea id="ta24" name="unpopular_opinion" maxlength="150" oninput="cc(this,'ct24',150)" placeholder="I genuinely believe that..."></textarea>
-  <div class="char-row"><span class="char-ct" id="ct24">0</span><span class="char-ct">&nbsp;/ 150</span></div>
-  <div class="q-err" id="e24">Please answer this question.</div>
+  <textarea id="ta25" name="unpopular_opinion" maxlength="150" oninput="cc(this,'ct25',150)" placeholder="I genuinely believe that..."></textarea>
+  <div class="char-row"><span class="char-ct" id="ct25">0</span><span class="char-ct">&nbsp;/ 150</span></div>
+  <div class="q-err" id="e25">Please answer this question.</div>
 </div></div>
 
-<!-- 25: INSTAGRAM -->
+<!-- 26: INSTAGRAM -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">Social media &middot; 1 of 2</div>
+  <div class="q-kicker">Social media</div>
   <div class="q-title">Instagram handle<span class="q-opt">optional</span></div>
   <p class="q-hint">Shared only with your confirmed match after both parties accept. Never shown publicly. Profiles with a handle get priority placement in the matching queue.</p>
   <div class="handle-row"><span class="handle-at">@</span><input type="text" name="instagram" placeholder="yourhandle" onkeydown="ek(event)"></div>
-</div></div>
-
-<!-- 26: TIKTOK -->
-<div class="slide"><div class="q-wrap">
-  <div class="q-kicker">Social media &middot; 2 of 2</div>
-  <div class="q-title">TikTok handle<span class="q-opt">optional</span></div>
-  <div class="handle-row"><span class="handle-at">@</span><input type="text" name="tiktok" placeholder="yourhandle" onkeydown="ek(event)"></div>
 </div></div>
 
 <!-- 27: HOW HEARD -->
@@ -430,7 +477,7 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
   <div class="chips" style="margin-top:8px;">
     <label class="chip"><input type="radio" name="source" value="Through my club">Through my club</label>
     <label class="chip"><input type="radio" name="source" value="A friend told me">A friend told me</label>
-    <label class="chip"><input type="radio" name="source" value="Instagram or TikTok">Instagram or TikTok</label>
+    <label class="chip"><input type="radio" name="source" value="Instagram">Instagram</label>
     <label class="chip"><input type="radio" name="source" value="Word of mouth">Word of mouth</label>
     <label class="chip"><input type="radio" name="source" value="Other">Other</label>
   </div>
@@ -474,63 +521,189 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
   </div>
 </div>
 
-<form id="hf" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" style="display:none"></form>
+<form id="hf" action="https://api.web3forms.com/submit" method="POST" style="display:none">
+  <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE">
+  <input type="hidden" name="subject" value="New Omakase application — Season Zero">
+  <input type="hidden" name="from_name" value="Omakase">
+</form>
 
 <script>
-const TOTAL=29,OPT=new Set([9,10,11,12,14,15,16,17,18,19,20,21,25,26,27,28]);
+// Slides: 0=welcome, 1=name, 2=email, 2b=otp(index 3), 3=year(4)...
+// We map logical slide index to DOM child index
+// DOM order: 0,1,2,2b,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30
+// cur tracks DOM child index (0-30)
+const TOTAL=29; // last question slide is 29
+const OPT=new Set([9,10,11,12,15,16,17,18,19,20,21,22,26,27,28]);
 let cur=0;
+let emailVerified=false;
+let otpCode='';
+let resendTimer=null;
+
+// Map cur (DOM index) to display number for progress
+// DOM index 3 is the OTP slide (not a separate question number)
+function displayNum(c){
+  if(c<=2) return c;
+  if(c===3) return 2; // OTP is part of Q2
+  return c-1; // shift back by 1 after OTP slide
+}
 
 function ui(){
   document.getElementById('si').style.transform='translateX(-'+(cur*100)+'%)';
-  document.getElementById('pb').style.width=(cur===30?100:(cur/TOTAL*100))+'%';
+  const dispN=displayNum(cur);
+  document.getElementById('pb').style.width=(cur===30?100:(dispN/TOTAL*100))+'%';
   const bB=document.getElementById('btnB'),bN=document.getElementById('btnN'),bS=document.getElementById('btnSkip'),ct=document.getElementById('counter');
   bB.disabled=cur===0||cur===30;
   if(cur===0){bN.textContent='Begin \u2192';bN.className='btn-next';bS.style.display='none';ct.textContent='';}
   else if(cur===29){bN.textContent='Submit application \u2192';bN.className='btn-next submit';bS.style.display='none';ct.textContent='Final step';}
   else if(cur===30){bN.style.display='none';bS.style.display='none';ct.textContent='';}
-  else{bN.textContent='Continue \u2192';bN.className='btn-next';bN.style.display='flex';bS.style.display=OPT.has(cur)?'inline-block':'none';ct.textContent=cur+' of '+TOTAL;}
+  else if(cur===3){bN.textContent='Verify \u2192';bN.className='btn-next';bS.style.display='none';ct.textContent='Verifying email';}
+  else{
+    bN.textContent='Continue \u2192';bN.className='btn-next';bN.style.display='flex';
+    bS.style.display=OPT.has(cur)?'inline-block':'none';
+    ct.textContent=dispN+' of '+TOTAL;
+  }
   const sl=document.querySelector('#si > div:nth-child('+(cur+1)+')');
-  if(sl){const inp=sl.querySelector('input[type=text],input[type=email],input[type=number],textarea');if(inp)setTimeout(()=>inp.focus(),460);}
+  if(sl){
+    if(cur===3){setTimeout(()=>document.getElementById('otp0').focus(),460);return;}
+    const inp=sl.querySelector('input[type=text],input[type=email],input[type=number],textarea');
+    if(inp)setTimeout(()=>inp.focus(),460);
+  }
 }
 
-function go(d){cur=Math.max(0,Math.min(cur+d,30));ui();}
+function go(d){
+  const next=cur+d;
+  if(next<0||next>30)return;
+  // skip OTP slide when going back from Q3+
+  if(d===-1&&cur===4){cur=2;ui();return;}
+  cur=next;ui();
+}
 
-function adv(){if(cur===29){sub();return;}if(!val(cur))return;go(1);}
+function adv(){
+  if(cur===29){sub();return;}
+  if(!val(cur))return;
+  if(cur===2){
+    // send OTP then move to OTP slide
+    sendOtp();
+    cur=3;ui();return;
+  }
+  if(cur===3){
+    // verify OTP
+    verifyOtp();return;
+  }
+  go(1);
+}
 
 function val(n){
   clrErr();
   if(n===1){const v=document.getElementById('fname').value.trim();if(!v){se('e1');return false;}}
   if(n===2){const v=document.getElementById('email').value.trim();if(!v.endsWith('@uwo.ca')){se('e2');return false;}}
-  if(n===3){if(!document.querySelector('input[name="year"]:checked')){se('e3');return false;}}
-  if(n===4){const v=parseInt(document.getElementById('age').value);if(isNaN(v)||v<18){se('e4');return false;}}
-  if(n===6){if(!document.querySelector('input[name="club"]:checked')){se('e6');return false;}}
-  if(n===7){if(!document.querySelector('input[name="gender"]:checked')){se('e7');return false;}}
-  if(n===8){if(!document.querySelector('input[name="open_to[]"]:checked')){se('e8');return false;}}
-  if(n===13){if(!document.querySelector('input[name="intent"]:checked')){se('e13');return false;}}
-  if(n===22){if(document.getElementById('ta22').value.trim().length<10){se('e22');return false;}}
-  if(n===23){if(document.getElementById('ta23').value.trim().length<5){se('e23');return false;}}
-  if(n===24){if(document.getElementById('ta24').value.trim().length<10){se('e24');return false;}}
+  if(n===4){if(!document.querySelector('input[name="year"]:checked')){se('e3');return false;}}
+  if(n===5){const v=parseInt(document.getElementById('age').value);if(isNaN(v)||v<18){se('e4');return false;}}
+  if(n===7){if(!document.querySelector('input[name="club"]:checked')){se('e6');return false;}}
+  if(n===8){if(!document.querySelector('input[name="gender"]:checked')){se('e7');return false;}}
+  if(n===9){if(!document.querySelector('input[name="open_to[]"]:checked')){se('e8');return false;}}
+  if(n===14){if(!document.querySelector('input[name="intent"]:checked')){se('e14');return false;}}
+  if(n===23){if(document.getElementById('ta23').value.trim().length<10){se('e23');return false;}}
+  if(n===24){if(document.getElementById('ta24').value.trim().length<5){se('e24');return false;}}
+  if(n===25){if(document.getElementById('ta25').value.trim().length<10){se('e25');return false;}}
   if(n===29){if(!document.getElementById('consent').checked){se('e29');return false;}}
   return true;
 }
 function se(id){const el=document.getElementById(id);if(el)el.classList.add('on');}
 function clrErr(){document.querySelectorAll('.q-err').forEach(e=>e.classList.remove('on'));}
 
+// OTP
+function generateCode(){return Math.floor(100000+Math.random()*900000).toString();}
+
+async function sendOtp(){
+  const email=document.getElementById('email').value.trim();
+  document.getElementById('email-display').textContent=email;
+  otpCode=generateCode();
+  // Clear boxes
+  for(let i=0;i<6;i++)document.getElementById('otp'+i).value='';
+  document.getElementById('otp-status').textContent='';
+  document.getElementById('e2b').classList.remove('on');
+
+  // Send via Web3Forms (reuse the same endpoint to email the code)
+  const data=new FormData();
+  data.append('access_key','YOUR_ACCESS_KEY_HERE');
+  data.append('subject','Your Omakase verification code');
+  data.append('from_name','Omakase');
+  data.append('email',email);
+  data.append('message','Your Omakase verification code is: '+otpCode+'\n\nThis code expires in 10 minutes. If you did not request this, please ignore this email.');
+
+  try{
+    await fetch('https://api.web3forms.com/submit',{method:'POST',body:data,headers:{'Accept':'application/json'}});
+    const st=document.getElementById('otp-status');
+    st.textContent='Code sent.';st.className='otp-status ok';
+  }catch{
+    const st=document.getElementById('otp-status');
+    st.textContent='Could not send code. Check your email address.';st.className='otp-status err';
+  }
+
+  // Resend timer
+  let sec=30;
+  const btn=document.getElementById('btn-resend');
+  btn.disabled=true;btn.textContent='Resend in '+sec+'s';
+  if(resendTimer)clearInterval(resendTimer);
+  resendTimer=setInterval(()=>{
+    sec--;
+    if(sec<=0){clearInterval(resendTimer);btn.disabled=false;btn.textContent='Resend code';}
+    else btn.textContent='Resend in '+sec+'s';
+  },1000);
+}
+
+function getOtpValue(){
+  let v='';
+  for(let i=0;i<6;i++)v+=document.getElementById('otp'+i).value;
+  return v;
+}
+
+function verifyOtp(){
+  const entered=getOtpValue();
+  if(entered.length<6){se('e2b');document.getElementById('e2b').textContent='Please enter the full 6-digit code.';return;}
+  if(entered===otpCode){
+    emailVerified=true;
+    const st=document.getElementById('otp-status');
+    st.textContent='Email verified.';st.className='otp-status ok';
+    setTimeout(()=>{cur=4;ui();},600);
+  }else{
+    se('e2b');document.getElementById('e2b').textContent='Incorrect code. Please try again.';
+  }
+}
+
+function otpInput(e,idx){
+  const v=e.target.value.replace(/[^0-9]/g,'');
+  e.target.value=v;
+  if(v&&idx<5)document.getElementById('otp'+(idx+1)).focus();
+  if(getOtpValue().length===6)verifyOtp();
+}
+
+function otpKey(e,idx){
+  if(e.key==='Backspace'&&!e.target.value&&idx>0){
+    document.getElementById('otp'+(idx-1)).focus();
+  }
+  if(e.key==='Enter')verifyOtp();
+}
+
+// SCALE
 function ps(name,val,el){
   document.querySelectorAll('#sc-'+name+' .sb').forEach(b=>b.classList.remove('on'));
   el.classList.add('on');
   document.getElementById('hv-'+name).value=val;
 }
 
+// CHAR COUNT
 function cc(el,cid,max){
   const len=el.value.length;
   const ct=document.getElementById(cid);
-  ct.textContent=len;
-  ct.classList.toggle('warn',len>max*0.88);
+  ct.textContent=len;ct.classList.toggle('warn',len>max*0.88);
 }
 
+// ENTER KEY
 function ek(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();adv();}}
 
+// CHIPS
 document.querySelectorAll('.chip input').forEach(inp=>{
   inp.addEventListener('change',function(){
     if(this.type==='radio')document.querySelectorAll('input[name="'+this.name+'"]').forEach(r=>r.closest('.chip').classList.remove('on'));
@@ -538,18 +711,65 @@ document.querySelectorAll('.chip input').forEach(inp=>{
   });
 });
 
+// DRAG RANK
+function initRank(listId,hiddenId){
+  const list=document.getElementById(listId);
+  let dragged=null;
+  list.querySelectorAll('.rank-item').forEach(item=>{
+    item.addEventListener('dragstart',function(){dragged=this;this.classList.add('dragging');});
+    item.addEventListener('dragend',function(){this.classList.remove('dragging');updateRank(listId,hiddenId);});
+    item.addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag-over');});
+    item.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+    item.addEventListener('drop',function(e){
+      e.preventDefault();this.classList.remove('drag-over');
+      if(dragged&&dragged!==this){
+        const items=[...list.querySelectorAll('.rank-item')];
+        const di=items.indexOf(dragged),ti=items.indexOf(this);
+        if(di<ti)list.insertBefore(dragged,this.nextSibling);
+        else list.insertBefore(dragged,this);
+        updateRank(listId,hiddenId);
+      }
+    });
+    // touch support
+    item.addEventListener('touchstart',function(e){dragged=this;this.classList.add('dragging');},{passive:true});
+    item.addEventListener('touchend',function(){
+      this.classList.remove('dragging');
+      updateRank(listId,hiddenId);
+    });
+  });
+  updateRank(listId,hiddenId);
+}
+
+function updateRank(listId,hiddenId){
+  const items=document.getElementById(listId).querySelectorAll('.rank-item');
+  items.forEach((item,i)=>{item.querySelector('.rank-num').textContent=i+1;});
+  const vals=[...items].map(i=>i.dataset.val).join(', ');
+  document.getElementById(hiddenId).value=vals;
+}
+
+initRank('rank-give','hv-give');
+initRank('rank-recv','hv-recv');
+
+// SUBMIT
 async function sub(){
   if(!val(29))return;
   const btn=document.getElementById('btnN');
   btn.textContent='Submitting...';btn.disabled=true;
   const data=new FormData();
+  // add web3forms hidden fields
+  document.querySelectorAll('#hf input[type=hidden]').forEach(el=>data.append(el.name,el.value));
+  // add all form fields
   document.querySelectorAll('[name]').forEach(el=>{
-    if(!el.name||el.type==='submit')return;
+    if(!el.name||el.id==='consent'&&!el.checked)return;
+    if(el.closest('#hf'))return;
     if((el.type==='checkbox'||el.type==='radio')&&!el.checked)return;
+    if(el.type==='hidden'&&el.closest('#hf'))return;
     data.append(el.name,el.value);
   });
+  // add consent explicitly
+  if(document.getElementById('consent').checked)data.append('consent','agreed');
   try{
-    const res=await fetch(document.getElementById('hf').action,{method:'POST',body:data,headers:{'Accept':'application/json'}});
+    const res=await fetch('https://api.web3forms.com/submit',{method:'POST',body:data,headers:{'Accept':'application/json'}});
     if(res.ok){cur=30;ui();document.getElementById('pb').style.width='100%';}
     else{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong. Please try again or email admin.omakase@gmail.com');}
   }catch{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong. Please try again or email admin.omakase@gmail.com');}
