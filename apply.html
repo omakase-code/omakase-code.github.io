@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply — Omakase</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --cream:#f5f0e8;--cream-dark:#ede6d8;
+  --ink:#1e1a14;--ink-light:#6b6355;--ink-faint:#a09880;
+  --gold:#8a7a60;--gold-light:#c4b49a;--rule:#d8d0c0;
+  --serif:'EB Garamond',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
+}
+html,body{height:100%;overflow:hidden;}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);display:flex;flex-direction:column;}
+
+.top-bar{height:52px;flex-shrink:0;background:var(--cream);border-bottom:0.5px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:0 40px;z-index:100;}
+.top-wordmark{font-family:var(--serif);font-size:16px;letter-spacing:0.15em;color:var(--ink);text-decoration:none;}
+.top-counter{font-family:var(--sans);font-size:12px;color:var(--ink-faint);letter-spacing:0.06em;}
+.top-home{font-family:var(--sans);font-size:12px;color:var(--ink-faint);text-decoration:none;transition:color 0.15s;}
+.top-home:hover{color:var(--ink);}
+
+.progress-wrap{height:1.5px;background:var(--cream-dark);flex-shrink:0;}
+.progress-bar{height:100%;background:var(--gold);width:0%;transition:width 0.5s cubic-bezier(0.4,0,0.2,1);}
+
+.slides-outer{flex:1;overflow:hidden;position:relative;}
+.slides-inner{display:flex;height:100%;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);}
+
+.slide{min-width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 40px;overflow-y:auto;}
+.q-wrap{width:100%;max-width:540px;}
+
+.q-kicker{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.22em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:20px;}
+.q-title{font-family:var(--serif);font-size:clamp(26px,4vw,38px);color:var(--ink);line-height:1.2;margin-bottom:10px;font-weight:400;}
+.q-title em{color:var(--gold);font-style:italic;}
+.q-hint{font-family:var(--sans);font-size:13px;color:var(--ink-faint);line-height:1.65;margin-bottom:22px;}
+.q-opt{font-family:var(--sans);font-size:11px;color:var(--gold-light);font-weight:400;font-style:normal;margin-left:8px;}
+
+input[type=text],input[type=email],input[type=number],textarea{
+  width:100%;font-family:var(--sans);font-size:16px;color:var(--ink);
+  background:transparent;border:none;border-bottom:1px solid var(--rule);
+  padding:10px 0;outline:none;transition:border-color 0.2s;border-radius:0;-webkit-appearance:none;
+}
+input:focus,textarea:focus{border-bottom-color:var(--gold);}
+textarea{resize:none;min-height:96px;line-height:1.7;}
+input::placeholder,textarea::placeholder{color:var(--rule);}
+
+.char-row{display:flex;justify-content:flex-end;margin-top:6px;}
+.char-ct{font-family:var(--sans);font-size:11px;color:var(--ink-faint);}
+.char-ct.warn{color:#c4714a;}
+
+.handle-row{display:flex;align-items:flex-end;}
+.handle-at{font-family:var(--sans);font-size:16px;color:var(--ink-faint);padding-bottom:10px;border-bottom:1px solid var(--rule);padding-right:3px;transition:border-color 0.2s;line-height:1;flex-shrink:0;}
+.handle-row:focus-within .handle-at{border-bottom-color:var(--gold);}
+.handle-row input{flex:1;}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.chip{display:inline-flex;align-items:center;padding:9px 16px;border:0.5px solid var(--rule);border-radius:2px;font-family:var(--sans);font-size:13px;color:var(--ink-light);cursor:pointer;transition:all 0.12s;user-select:none;background:transparent;}
+.chip:hover{border-color:var(--gold-light);color:var(--ink);}
+.chip.on{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.chip input{display:none;}
+
+.scale-row{display:flex;gap:10px;margin-top:8px;}
+.sb{flex:1;padding:13px 4px;text-align:center;border:0.5px solid var(--rule);border-radius:2px;font-family:var(--serif);font-size:19px;color:var(--ink-faint);cursor:pointer;transition:all 0.12s;}
+.sb:hover{border-color:var(--gold-light);color:var(--ink);}
+.sb.on{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+.scale-ends{display:flex;justify-content:space-between;font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-top:8px;}
+
+.consent-body{font-family:var(--sans);font-size:13px;color:var(--ink-faint);line-height:1.75;margin-bottom:20px;}
+.consent-row{display:flex;align-items:flex-start;gap:12px;cursor:pointer;}
+.consent-row input{width:16px;height:16px;flex-shrink:0;margin-top:3px;accent-color:var(--ink);cursor:pointer;border:0.5px solid var(--rule);border-bottom:none;padding:0;}
+.consent-lbl{font-family:var(--sans);font-size:14px;color:var(--ink);line-height:1.6;}
+.consent-lbl a{color:var(--gold);text-decoration:none;}
+
+.q-err{font-family:var(--sans);font-size:12px;color:#c4714a;margin-top:8px;display:none;}
+.q-err.on{display:block;}
+
+.welcome-kicker{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:20px;}
+.welcome-title{font-family:var(--serif);font-size:clamp(44px,7vw,72px);color:var(--ink);line-height:1.05;margin-bottom:16px;}
+.welcome-title em{color:var(--gold);font-style:italic;}
+.welcome-div{width:32px;height:0.5px;background:var(--rule);margin:20px 0;}
+.welcome-sub{font-family:var(--serif);font-size:18px;color:var(--ink-light);font-style:italic;line-height:1.6;max-width:420px;margin-bottom:10px;}
+.welcome-meta{font-family:var(--sans);font-size:12px;color:var(--ink-faint);letter-spacing:0.04em;}
+
+.success-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;max-width:460px;}
+.success-tick{font-family:var(--serif);font-size:60px;color:var(--gold);margin-bottom:24px;font-style:italic;}
+.success-title{font-family:var(--serif);font-size:clamp(28px,4vw,40px);color:var(--ink);margin-bottom:16px;line-height:1.1;}
+.success-sub{font-family:var(--serif);font-size:18px;color:var(--ink-light);font-style:italic;line-height:1.7;}
+
+.bottom-bar{height:68px;flex-shrink:0;background:var(--cream);border-top:0.5px solid var(--rule);display:flex;align-items:center;justify-content:space-between;padding:0 40px;}
+.btn-back{font-family:var(--sans);font-size:13px;color:var(--ink-faint);background:none;border:none;cursor:pointer;transition:color 0.15s;padding:0;}
+.btn-back:hover{color:var(--ink);}
+.btn-back:disabled{opacity:0;pointer-events:none;}
+.right-btns{display:flex;align-items:center;gap:16px;}
+.btn-skip{font-family:var(--sans);font-size:12px;color:var(--ink-faint);background:none;border:none;cursor:pointer;transition:color 0.15s;}
+.btn-skip:hover{color:var(--ink);}
+.btn-next{font-family:var(--sans);font-size:13px;font-weight:500;letter-spacing:0.05em;background:var(--ink);color:var(--cream);padding:12px 26px;border-radius:2px;border:none;cursor:pointer;transition:opacity 0.15s;display:flex;align-items:center;gap:6px;}
+.btn-next:hover{opacity:0.8;}
+.btn-next.submit{background:var(--gold);}
+
+@media(max-width:600px){
+  .top-bar,.bottom-bar{padding:0 20px;}
+  .slide{padding:32px 20px;}
+  .scale-row{gap:6px;}
+  .sb{padding:11px 2px;font-size:17px;}
+  .btn-next{padding:11px 20px;}
+}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <a class="top-wordmark" href="index.html">OMAKASE</a>
+  <span class="top-counter" id="counter"></span>
+  <a class="top-home" href="index.html">&larr; Home</a>
+</div>
+<div class="progress-wrap"><div class="progress-bar" id="pb"></div></div>
+
+<div class="slides-outer">
+<div class="slides-inner" id="si">
+
+<!-- 0: WELCOME -->
+<div class="slide"><div class="q-wrap">
+  <div class="welcome-kicker">Season Zero &middot; Western University &middot; April 2026</div>
+  <h1 class="welcome-title">Apply for a<br><em>pairing.</em></h1>
+  <div class="welcome-div"></div>
+  <p class="welcome-sub">Like any great omakase chef, we ask about your allergies first. Tell us what matters — then trust the kitchen.</p>
+  <p class="welcome-meta">About 10 minutes &middot; Closes Sunday April 26 at 11:59pm</p>
+</div></div>
+
+<!-- 1: FIRST NAME -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 1 of 8</div>
+  <div class="q-title">What is your<br>first name?</div>
+  <p class="q-hint">This is how we'll address you.</p>
+  <input type="text" id="fname" name="first_name" placeholder="Your first name" autocomplete="given-name" onkeydown="ek(event)">
+  <div class="q-err" id="e1">Please enter your first name.</div>
+</div></div>
+
+<!-- 2: EMAIL -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 2 of 8</div>
+  <div class="q-title">Your university<br>email address</div>
+  <p class="q-hint">Must be your @uwo.ca address. This is how we verify you're a current student and how your pairing arrives May 1st.</p>
+  <input type="email" id="email" name="email" placeholder="you@uwo.ca" autocomplete="email" onkeydown="ek(event)">
+  <div class="q-err" id="e2">Please enter a valid @uwo.ca email address.</div>
+</div></div>
+
+<!-- 3: YEAR -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 3 of 8</div>
+  <div class="q-title">Year of study</div>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="radio" name="year" value="1st year">1st year</label>
+    <label class="chip"><input type="radio" name="year" value="2nd year">2nd year</label>
+    <label class="chip"><input type="radio" name="year" value="3rd year">3rd year</label>
+    <label class="chip"><input type="radio" name="year" value="4th year">4th year</label>
+    <label class="chip"><input type="radio" name="year" value="5th year or beyond">5th year+</label>
+    <label class="chip"><input type="radio" name="year" value="Graduate student">Graduate</label>
+    <label class="chip"><input type="radio" name="year" value="PhD">PhD</label>
+  </div>
+  <div class="q-err" id="e3">Please select your year.</div>
+</div></div>
+
+<!-- 4: AGE -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 4 of 8</div>
+  <div class="q-title">How old are you?</div>
+  <p class="q-hint">You must be 18 or older to apply.</p>
+  <input type="number" id="age" name="age" min="18" max="99" placeholder="e.g. 21" style="max-width:130px" onkeydown="ek(event)">
+  <div class="q-err" id="e4">You must be 18 or older to apply.</div>
+</div></div>
+
+<!-- 5: PROGRAM -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 5 of 8</div>
+  <div class="q-title">Program or faculty</div>
+  <input type="text" name="program" placeholder="e.g. Engineering, Ivey, Social Science" onkeydown="ek(event)">
+</div></div>
+
+<!-- 6: CLUB -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 6 of 8</div>
+  <div class="q-title">Which participating club<br>are you a member of?</div>
+  <p class="q-hint">Club membership is required for Season Zero.</p>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="radio" name="club" value="CAISA">CAISA</label>
+    <label class="chip"><input type="radio" name="club" value="Chinese Students Association">Chinese Students Association</label>
+    <label class="chip"><input type="radio" name="club" value="Taiwanese Students Association">Taiwanese Students Association</label>
+    <label class="chip"><input type="radio" name="club" value="Vietnamese Students Association">Vietnamese Students Association</label>
+    <label class="chip"><input type="radio" name="club" value="Korean Students Association">Korean Students Association</label>
+    <label class="chip"><input type="radio" name="club" value="Filipino Students Association">Filipino Students Association</label>
+    <label class="chip"><input type="radio" name="club" value="South Asian Students Association">South Asian Students Association</label>
+    <label class="chip"><input type="radio" name="club" value="Japanese Cultural Association">Japanese Cultural Association</label>
+    <label class="chip"><input type="radio" name="club" value="Other Asian student club">Other</label>
+  </div>
+  <div class="q-err" id="e6">Please select your club.</div>
+</div></div>
+
+<!-- 7: GENDER -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 7 of 8</div>
+  <div class="q-title">I identify as</div>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="radio" name="gender" value="Man">Man</label>
+    <label class="chip"><input type="radio" name="gender" value="Woman">Woman</label>
+    <label class="chip"><input type="radio" name="gender" value="Non-binary">Non-binary</label>
+    <label class="chip"><input type="radio" name="gender" value="Prefer not to say">Prefer not to say</label>
+  </div>
+  <div class="q-err" id="e7">Please select one.</div>
+</div></div>
+
+<!-- 8: OPEN TO -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">The basics &middot; 8 of 8</div>
+  <div class="q-title">I am open to<br>being paired with</div>
+  <p class="q-hint">Select all that apply.</p>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="checkbox" name="open_to[]" value="Men">Men</label>
+    <label class="chip"><input type="checkbox" name="open_to[]" value="Women">Women</label>
+    <label class="chip"><input type="checkbox" name="open_to[]" value="Non-binary people">Non-binary people</label>
+    <label class="chip"><input type="checkbox" name="open_to[]" value="Anyone">Anyone</label>
+  </div>
+  <div class="q-err" id="e8">Please select at least one.</div>
+</div></div>
+
+<!-- 9: ETHNICITY -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Heritage &middot; 1 of 4</div>
+  <div class="q-title">Ethnic background<span class="q-opt">optional</span></div>
+  <p class="q-hint">Never used to limit your matches unless you ask us to. Select all that apply.</p>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Chinese">Chinese</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Taiwanese">Taiwanese</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Vietnamese">Vietnamese</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Korean">Korean</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Japanese">Japanese</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Filipino">Filipino</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="South Asian">South Asian</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Southeast Asian">Southeast Asian</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Mixed">Mixed</label>
+    <label class="chip"><input type="checkbox" name="ethnicity[]" value="Prefer not to say">Prefer not to say</label>
+  </div>
+</div></div>
+
+<!-- 10: LANGUAGES -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Heritage &middot; 2 of 4</div>
+  <div class="q-title">Languages you speak<span class="q-opt">optional</span></div>
+  <input type="text" name="languages" placeholder="e.g. Mandarin, English, Cantonese" onkeydown="ek(event)">
+</div></div>
+
+<!-- 11: BACKGROUND -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Heritage &middot; 3 of 4</div>
+  <div class="q-title">Which best describes<br>your background?<span class="q-opt">optional</span></div>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="radio" name="background" value="Born in Canada">Born in Canada</label>
+    <label class="chip"><input type="radio" name="background" value="Immigrated as a child">Immigrated as a child</label>
+    <label class="chip"><input type="radio" name="background" value="International student">International student</label>
+    <label class="chip"><input type="radio" name="background" value="Prefer not to say">Prefer not to say</label>
+  </div>
+</div></div>
+
+<!-- 12: ETHNIC PREFERENCE -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Heritage &middot; 4 of 4</div>
+  <div class="q-title">Open to matching outside<br>your ethnic background?<span class="q-opt">optional</span></div>
+  <p class="q-hint">There's no wrong answer. Preferences are respected on both sides — yours and your potential match's equally. We recognize cultural background can matter in a relationship; removing the ability to express it doesn't make the consideration disappear.</p>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="radio" name="ethnic_pref" value="Yes, completely open">Yes, completely open</label>
+    <label class="chip"><input type="radio" name="ethnic_pref" value="Slight preference within my background">Slight preference within my background</label>
+    <label class="chip"><input type="radio" name="ethnic_pref" value="Strong preference within my background">Strong preference within my background</label>
+  </div>
+</div></div>
+
+<!-- 13: INTENT -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">What you're looking for &middot; 1 of 3</div>
+  <div class="q-title">What are you<br>hoping to find?</div>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="radio" name="intent" value="Something serious">Something serious</label>
+    <label class="chip"><input type="radio" name="intent" value="Casual dating">Casual dating</label>
+    <label class="chip"><input type="radio" name="intent" value="Open to either">Open to either</label>
+    <label class="chip"><input type="radio" name="intent" value="Not sure yet">Not sure yet</label>
+  </div>
+  <div class="q-err" id="e13">Please select one.</div>
+</div></div>
+
+<!-- 14: AGE RANGE -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">What you're looking for &middot; 2 of 3</div>
+  <div class="q-title">Preferred age range<span class="q-opt">optional</span></div>
+  <p class="q-hint">Leave blank if you have no preference.</p>
+  <div style="display:flex;gap:20px;align-items:flex-end;margin-top:8px;">
+    <div style="flex:1;"><div style="font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase;">Min</div><input type="number" name="age_min" placeholder="18" min="18" max="99"></div>
+    <div style="padding-bottom:10px;color:var(--rule);font-size:22px;">—</div>
+    <div style="flex:1;"><div style="font-family:var(--sans);font-size:11px;color:var(--ink-faint);margin-bottom:6px;letter-spacing:0.08em;text-transform:uppercase;">Max</div><input type="number" name="age_max" placeholder="30" min="18" max="99"></div>
+  </div>
+</div></div>
+
+<!-- 15: DEALBREAKERS -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">What you're looking for &middot; 3 of 3</div>
+  <div class="q-title">Dealbreakers<span class="q-opt">optional</span></div>
+  <p class="q-hint">Completely confidential. Before any AI analysis takes place, your name and email are removed — the matching system sees only your answers, never who you are.</p>
+  <textarea name="dealbreakers" placeholder="e.g. must not smoke, religion is important, family values must align..."></textarea>
+</div></div>
+
+<!-- 16: RELIGION -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Values &amp; lifestyle &middot; 1 of 6</div>
+  <div class="q-title">How important is religion<br>or spirituality to you?<span class="q-opt">optional</span></div>
+  <div class="scale-row" id="sc-r"><div class="sb" onclick="ps('r',1,this)">1</div><div class="sb" onclick="ps('r',2,this)">2</div><div class="sb" onclick="ps('r',3,this)">3</div><div class="sb" onclick="ps('r',4,this)">4</div><div class="sb" onclick="ps('r',5,this)">5</div></div>
+  <div class="scale-ends"><span>Not important</span><span>Central to my life</span></div>
+  <input type="hidden" name="religion" id="hv-r">
+</div></div>
+
+<!-- 17: AMBITION -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Values &amp; lifestyle &middot; 2 of 6</div>
+  <div class="q-title">How important is similar<br>career ambition?<span class="q-opt">optional</span></div>
+  <div class="scale-row" id="sc-a"><div class="sb" onclick="ps('a',1,this)">1</div><div class="sb" onclick="ps('a',2,this)">2</div><div class="sb" onclick="ps('a',3,this)">3</div><div class="sb" onclick="ps('a',4,this)">4</div><div class="sb" onclick="ps('a',5,this)">5</div></div>
+  <div class="scale-ends"><span>Not important</span><span>Very important</span></div>
+  <input type="hidden" name="ambition" id="hv-a">
+</div></div>
+
+<!-- 18: FAMILY -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Values &amp; lifestyle &middot; 3 of 6</div>
+  <div class="q-title">How important is family<br>approval in relationships?<span class="q-opt">optional</span></div>
+  <div class="scale-row" id="sc-f"><div class="sb" onclick="ps('f',1,this)">1</div><div class="sb" onclick="ps('f',2,this)">2</div><div class="sb" onclick="ps('f',3,this)">3</div><div class="sb" onclick="ps('f',4,this)">4</div><div class="sb" onclick="ps('f',5,this)">5</div></div>
+  <div class="scale-ends"><span>Not important</span><span>Essential</span></div>
+  <input type="hidden" name="family" id="hv-f">
+</div></div>
+
+<!-- 19: SOCIAL -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Values &amp; lifestyle &middot; 4 of 6</div>
+  <div class="q-title">Your social energy<span class="q-opt">optional</span></div>
+  <div class="scale-row" id="sc-s"><div class="sb" onclick="ps('s',1,this)">1</div><div class="sb" onclick="ps('s',2,this)">2</div><div class="sb" onclick="ps('s',3,this)">3</div><div class="sb" onclick="ps('s',4,this)">4</div><div class="sb" onclick="ps('s',5,this)">5</div></div>
+  <div class="scale-ends"><span>Total introvert</span><span>Total extrovert</span></div>
+  <input type="hidden" name="social" id="hv-s">
+</div></div>
+
+<!-- 20: LIFESTYLE -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Values &amp; lifestyle &middot; 5 of 6</div>
+  <div class="q-title">Your lifestyle<span class="q-opt">optional</span></div>
+  <p class="q-hint">Select all that fit.</p>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Homebody">Homebody</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Outdoorsy">Outdoorsy</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Foodie">Foodie</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Gym regular">Gym regular</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Night out person">Night out person</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Creative or artsy">Creative or artsy</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Gamer">Gamer</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Traveller">Traveller</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Early riser">Early riser</label>
+    <label class="chip"><input type="checkbox" name="lifestyle[]" value="Night owl">Night owl</label>
+  </div>
+</div></div>
+
+<!-- 21: LOVE LANGUAGE -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Values &amp; lifestyle &middot; 6 of 6</div>
+  <div class="q-title">My primary<br>love language<span class="q-opt">optional</span></div>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="radio" name="love_language" value="Words of affirmation">Words of affirmation</label>
+    <label class="chip"><input type="radio" name="love_language" value="Quality time">Quality time</label>
+    <label class="chip"><input type="radio" name="love_language" value="Acts of service">Acts of service</label>
+    <label class="chip"><input type="radio" name="love_language" value="Physical touch">Physical touch</label>
+    <label class="chip"><input type="radio" name="love_language" value="Gifts">Gifts</label>
+  </div>
+</div></div>
+
+<!-- 22: PROUD OF -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Three questions &middot; 1 of 3</div>
+  <div class="q-title">What's something you're<br><em>genuinely proud of</em> this year?</div>
+  <p class="q-hint">Not your GPA or your internship — something that actually meant something to you.</p>
+  <textarea id="ta22" name="proud_of" maxlength="150" oninput="cc(this,'ct22',150)" placeholder="Tell us something real..."></textarea>
+  <div class="char-row"><span class="char-ct" id="ct22">0</span><span class="char-ct">&nbsp;/ 150</span></div>
+  <div class="q-err" id="e22">Please answer this question.</div>
+</div></div>
+
+<!-- 23: IDEAL SUNDAY -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Three questions &middot; 2 of 3</div>
+  <div class="q-title">Describe your<br><em>ideal Sunday</em> in one sentence.</div>
+  <p class="q-hint">There's no right answer. This tells us more than you'd expect.</p>
+  <textarea id="ta23" name="ideal_sunday" maxlength="100" oninput="cc(this,'ct23',100)" placeholder="My ideal Sunday is..." style="min-height:72px"></textarea>
+  <div class="char-row"><span class="char-ct" id="ct23">0</span><span class="char-ct">&nbsp;/ 100</span></div>
+  <div class="q-err" id="e23">Please answer this question.</div>
+</div></div>
+
+<!-- 24: OPINION -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Three questions &middot; 3 of 3</div>
+  <div class="q-title">An opinion most people<br>around you <em>disagree with</em></div>
+  <p class="q-hint">Food, life, culture — anything. We're looking for someone who thinks for themselves.</p>
+  <textarea id="ta24" name="unpopular_opinion" maxlength="150" oninput="cc(this,'ct24',150)" placeholder="I genuinely believe that..."></textarea>
+  <div class="char-row"><span class="char-ct" id="ct24">0</span><span class="char-ct">&nbsp;/ 150</span></div>
+  <div class="q-err" id="e24">Please answer this question.</div>
+</div></div>
+
+<!-- 25: INSTAGRAM -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Social media &middot; 1 of 2</div>
+  <div class="q-title">Instagram handle<span class="q-opt">optional</span></div>
+  <p class="q-hint">Shared only with your confirmed match after both parties accept. Never shown publicly. Profiles with a handle get priority placement in the matching queue.</p>
+  <div class="handle-row"><span class="handle-at">@</span><input type="text" name="instagram" placeholder="yourhandle" onkeydown="ek(event)"></div>
+</div></div>
+
+<!-- 26: TIKTOK -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Social media &middot; 2 of 2</div>
+  <div class="q-title">TikTok handle<span class="q-opt">optional</span></div>
+  <div class="handle-row"><span class="handle-at">@</span><input type="text" name="tiktok" placeholder="yourhandle" onkeydown="ek(event)"></div>
+</div></div>
+
+<!-- 27: HOW HEARD -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Almost there &middot; 1 of 3</div>
+  <div class="q-title">How did you hear<br>about Omakase?<span class="q-opt">optional</span></div>
+  <div class="chips" style="margin-top:8px;">
+    <label class="chip"><input type="radio" name="source" value="Through my club">Through my club</label>
+    <label class="chip"><input type="radio" name="source" value="A friend told me">A friend told me</label>
+    <label class="chip"><input type="radio" name="source" value="Instagram or TikTok">Instagram or TikTok</label>
+    <label class="chip"><input type="radio" name="source" value="Word of mouth">Word of mouth</label>
+    <label class="chip"><input type="radio" name="source" value="Other">Other</label>
+  </div>
+</div></div>
+
+<!-- 28: ANYTHING ELSE -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Almost there &middot; 2 of 3</div>
+  <div class="q-title">Anything else you'd<br>like us to know?<span class="q-opt">optional</span></div>
+  <p class="q-hint">This is your chance to tell us something the form didn't ask.</p>
+  <textarea name="anything_else" placeholder="Completely optional..." style="min-height:72px"></textarea>
+</div></div>
+
+<!-- 29: CONSENT -->
+<div class="slide"><div class="q-wrap">
+  <div class="q-kicker">Almost there &middot; 3 of 3</div>
+  <div class="q-title">One last thing</div>
+  <div class="consent-body">By submitting this application you confirm you are 18 or older and a current student at Western University, and agree to Omakase's Data Principles and Protection Policy. Before any AI analysis takes place, all personally identifiable information — your name, email, and social media handles — is removed. The AI sees only what you think, value, and feel, never who you are. The raw data is handled exclusively by one Western student following the highest standards of personal data protection.</div>
+  <label class="consent-row">
+    <input type="checkbox" id="consent" name="consent" value="agreed">
+    <span class="consent-lbl">I confirm I am 18+, a current Western student, and I agree to the above. <a href="index.html" target="_blank">Read the full privacy policy &rarr;</a></span>
+  </label>
+  <div class="q-err" id="e29">You must agree to continue.</div>
+</div></div>
+
+<!-- 30: SUCCESS -->
+<div class="slide"><div class="success-wrap">
+  <div class="success-tick">&#x2713;</div>
+  <h2 class="success-title">Your application<br>is in the kitchen.</h2>
+  <p class="success-sub">We'll be in touch before May 1st.<br><br>The best introductions don't need perfect timing.<br>They just need to happen.</p>
+</div></div>
+
+</div>
+</div>
+
+<div class="bottom-bar">
+  <button class="btn-back" id="btnB" onclick="go(-1)" disabled>&larr; Back</button>
+  <div class="right-btns">
+    <button class="btn-skip" id="btnSkip" onclick="go(1)" style="display:none">Skip</button>
+    <button class="btn-next" id="btnN" onclick="adv()">Begin &rarr;</button>
+  </div>
+</div>
+
+<form id="hf" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" style="display:none"></form>
+
+<script>
+const TOTAL=29,OPT=new Set([9,10,11,12,14,15,16,17,18,19,20,21,25,26,27,28]);
+let cur=0;
+
+function ui(){
+  document.getElementById('si').style.transform='translateX(-'+(cur*100)+'%)';
+  document.getElementById('pb').style.width=(cur===30?100:(cur/TOTAL*100))+'%';
+  const bB=document.getElementById('btnB'),bN=document.getElementById('btnN'),bS=document.getElementById('btnSkip'),ct=document.getElementById('counter');
+  bB.disabled=cur===0||cur===30;
+  if(cur===0){bN.textContent='Begin \u2192';bN.className='btn-next';bS.style.display='none';ct.textContent='';}
+  else if(cur===29){bN.textContent='Submit application \u2192';bN.className='btn-next submit';bS.style.display='none';ct.textContent='Final step';}
+  else if(cur===30){bN.style.display='none';bS.style.display='none';ct.textContent='';}
+  else{bN.textContent='Continue \u2192';bN.className='btn-next';bN.style.display='flex';bS.style.display=OPT.has(cur)?'inline-block':'none';ct.textContent=cur+' of '+TOTAL;}
+  const sl=document.querySelector('#si > div:nth-child('+(cur+1)+')');
+  if(sl){const inp=sl.querySelector('input[type=text],input[type=email],input[type=number],textarea');if(inp)setTimeout(()=>inp.focus(),460);}
+}
+
+function go(d){cur=Math.max(0,Math.min(cur+d,30));ui();}
+
+function adv(){if(cur===29){sub();return;}if(!val(cur))return;go(1);}
+
+function val(n){
+  clrErr();
+  if(n===1){const v=document.getElementById('fname').value.trim();if(!v){se('e1');return false;}}
+  if(n===2){const v=document.getElementById('email').value.trim();if(!v.endsWith('@uwo.ca')){se('e2');return false;}}
+  if(n===3){if(!document.querySelector('input[name="year"]:checked')){se('e3');return false;}}
+  if(n===4){const v=parseInt(document.getElementById('age').value);if(isNaN(v)||v<18){se('e4');return false;}}
+  if(n===6){if(!document.querySelector('input[name="club"]:checked')){se('e6');return false;}}
+  if(n===7){if(!document.querySelector('input[name="gender"]:checked')){se('e7');return false;}}
+  if(n===8){if(!document.querySelector('input[name="open_to[]"]:checked')){se('e8');return false;}}
+  if(n===13){if(!document.querySelector('input[name="intent"]:checked')){se('e13');return false;}}
+  if(n===22){if(document.getElementById('ta22').value.trim().length<10){se('e22');return false;}}
+  if(n===23){if(document.getElementById('ta23').value.trim().length<5){se('e23');return false;}}
+  if(n===24){if(document.getElementById('ta24').value.trim().length<10){se('e24');return false;}}
+  if(n===29){if(!document.getElementById('consent').checked){se('e29');return false;}}
+  return true;
+}
+function se(id){const el=document.getElementById(id);if(el)el.classList.add('on');}
+function clrErr(){document.querySelectorAll('.q-err').forEach(e=>e.classList.remove('on'));}
+
+function ps(name,val,el){
+  document.querySelectorAll('#sc-'+name+' .sb').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('hv-'+name).value=val;
+}
+
+function cc(el,cid,max){
+  const len=el.value.length;
+  const ct=document.getElementById(cid);
+  ct.textContent=len;
+  ct.classList.toggle('warn',len>max*0.88);
+}
+
+function ek(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();adv();}}
+
+document.querySelectorAll('.chip input').forEach(inp=>{
+  inp.addEventListener('change',function(){
+    if(this.type==='radio')document.querySelectorAll('input[name="'+this.name+'"]').forEach(r=>r.closest('.chip').classList.remove('on'));
+    this.closest('.chip').classList.toggle('on',this.checked);
+  });
+});
+
+async function sub(){
+  if(!val(29))return;
+  const btn=document.getElementById('btnN');
+  btn.textContent='Submitting...';btn.disabled=true;
+  const data=new FormData();
+  document.querySelectorAll('[name]').forEach(el=>{
+    if(!el.name||el.type==='submit')return;
+    if((el.type==='checkbox'||el.type==='radio')&&!el.checked)return;
+    data.append(el.name,el.value);
+  });
+  try{
+    const res=await fetch(document.getElementById('hf').action,{method:'POST',body:data,headers:{'Accept':'application/json'}});
+    if(res.ok){cur=30;ui();document.getElementById('pb').style.width='100%';}
+    else{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong. Please try again or email admin.omakase@gmail.com');}
+  }catch{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong. Please try again or email admin.omakase@gmail.com');}
+}
+
+ui();
+</script>
+</body>
+</html>
