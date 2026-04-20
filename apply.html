@@ -266,6 +266,10 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Southeast Asian">Southeast Asian</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Mixed">Mixed</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Prefer not to say">Prefer not to say</label>
+    <label class="chip" id="chip-other-eth" onclick="toggleOtherEth(this)"><input type="checkbox" name="ethnicity[]" value="Other" id="cb-other-eth">Other</label>
+  </div>
+  <div id="other-eth-wrap" style="display:none;margin-top:14px;">
+    <input type="text" id="other-eth-input" name="ethnicity_other" placeholder="Please specify..." onkeydown="ek(event)">
   </div>
 </div></div>
 
@@ -501,18 +505,18 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 </form>
 
 <script>
-const TOTAL=29;
-const OPT=new Set([9,10,11,12,15,16,17,18,19,20,21,22,26,27,28]);
+const TOTAL=28;
+const OPT=new Set([8,9,10,11,14,15,16,17,18,19,20,21,25,26,27]);
 let cur=0;
 
 function ui(){
   document.getElementById('si').style.transform='translateX(-'+(cur*100)+'%)';
-  document.getElementById('pb').style.width=(cur===30?100:(cur/TOTAL*100))+'%';
+  document.getElementById('pb').style.width=(cur===29?100:(cur/TOTAL*100))+'%';
   const bB=document.getElementById('btnB'),bN=document.getElementById('btnN'),bS=document.getElementById('btnSkip'),ct=document.getElementById('counter');
-  bB.disabled=cur===0||cur===30;
+  bB.disabled=cur===0||cur===29;
   if(cur===0){bN.textContent='Begin \u2192';bN.className='btn-next';bS.style.display='none';ct.textContent='';}
-  else if(cur===29){bN.textContent='Submit application \u2192';bN.className='btn-next submit';bS.style.display='none';ct.textContent='Final step';}
-  else if(cur===30){bN.style.display='none';bS.style.display='none';ct.textContent='';}
+  else if(cur===28){bN.textContent='Submit application \u2192';bN.className='btn-next submit';bS.style.display='none';ct.textContent='Final step';}
+  else if(cur===29){bN.style.display='none';bS.style.display='none';ct.textContent='';}
   else{
     bN.textContent='Continue \u2192';bN.className='btn-next';bN.style.display='flex';
     bS.style.display=OPT.has(cur)?'inline-block':'none';
@@ -522,9 +526,9 @@ function ui(){
   if(sl){const inp=sl.querySelector('input[type=text],input[type=email],input[type=number],textarea');if(inp)setTimeout(()=>inp.focus(),460);}
 }
 
-function go(d){cur=Math.max(0,Math.min(cur+d,30));ui();}
+function go(d){cur=Math.max(0,Math.min(cur+d,29));ui();}
 
-function adv(){if(cur===29){sub();return;}if(!val(cur))return;go(1);}
+function adv(){if(cur===28){sub();return;}if(!val(cur))return;go(1);}
 
 function val(n){
   clrErr();
@@ -535,15 +539,24 @@ function val(n){
   if(n===6){if(!document.querySelector('input[name="club"]:checked')){se('e6');return false;}}
   if(n===7){if(!document.querySelector('input[name="gender"]:checked')){se('e7');return false;}}
   if(n===8){if(!document.querySelector('input[name="open_to[]"]:checked')){se('e8');return false;}}
-  if(n===13){if(!document.querySelector('input[name="intent"]:checked')){se('e14');return false;}}
-  if(n===22){if(document.getElementById('ta23').value.trim().length<10){se('e23');return false;}}
-  if(n===23){if(document.getElementById('ta24').value.trim().length<5){se('e24');return false;}}
-  if(n===24){if(document.getElementById('ta25').value.trim().length<10){se('e25');return false;}}
+  if(n===12){if(!document.querySelector('input[name="intent"]:checked')){se('e14');return false;}}
+  if(n===21){if(document.getElementById('ta23').value.trim().length<10){se('e23');return false;}}
+  if(n===22){if(document.getElementById('ta24').value.trim().length<5){se('e24');return false;}}
+  if(n===23){if(document.getElementById('ta25').value.trim().length<10){se('e25');return false;}}
   if(n===28){if(!document.getElementById('consent').checked){se('e29');return false;}}
   return true;
 }
 function se(id){const el=document.getElementById(id);if(el)el.classList.add('on');}
 function clrErr(){document.querySelectorAll('.q-err').forEach(e=>e.classList.remove('on'));}
+
+function toggleOtherEth(label){
+  const cb=document.getElementById('cb-other-eth');
+  cb.checked=!cb.checked;
+  label.classList.toggle('on',cb.checked);
+  const wrap=document.getElementById('other-eth-wrap');
+  wrap.style.display=cb.checked?'block':'none';
+  if(cb.checked)setTimeout(()=>document.getElementById('other-eth-input').focus(),50);
+}
 
 // SCALE
 function ps(name,val,el){
@@ -629,7 +642,7 @@ async function sub(){
   if(document.getElementById('consent').checked)data.append('consent','agreed');
   try{
     const res=await fetch('https://api.web3forms.com/submit',{method:'POST',body:data,headers:{'Accept':'application/json'}});
-    if(res.ok){cur=30;ui();document.getElementById('pb').style.width='100%';}
+    if(res.ok){cur=29;ui();document.getElementById('pb').style.width='100%';}
     else{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong. Please try again or email admin.omakase@gmail.com');}
   }catch{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong. Please try again or email admin.omakase@gmail.com');}
 }
