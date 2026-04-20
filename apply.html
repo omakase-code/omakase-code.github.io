@@ -626,7 +626,7 @@ async function sendOtp(){
 
   // Send via Web3Forms (reuse the same endpoint to email the code)
   const data=new FormData();
-  data.append('access_key','YOUR_ACCESS_KEY_HERE');
+  data.append('access_key','108ae37f-50a8-4a7c-948b-0b39d50df415');
   data.append('subject','Your Omakase verification code');
   data.append('from_name','Omakase');
   data.append('email',email);
@@ -777,5 +777,12 @@ async function sub(){
 
 ui();
 </script>
+
+<form id="hf" style="display:none">
+  <input type="hidden" name="access_key" value="108ae37f-50a8-4a7c-948b-0b39d50df415">
+  <input type="hidden" name="subject" value="New Omakase application — Season Zero">
+  <input type="hidden" name="from_name" value="Omakase">
+</form>
+
 </body>
 </html>
