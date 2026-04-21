@@ -651,8 +651,9 @@ async function sub(){
   if(document.getElementById('consent').checked)data.append('consent','agreed');
   try{
     const res=await fetch('https://api.web3forms.com/submit',{method:'POST',body:data,headers:{'Accept':'application/json'}});
-    if(res.ok){cur=30;ui();document.getElementById('pb').style.width='100%';}
-    else{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong. Please try again or email admin.omakase@gmail.com');}
+    const json=await res.json();
+    if(json.success){cur=30;ui();document.getElementById('pb').style.width='100%';}
+    else{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong: '+(json.message||'please try again or email admin.omakase@gmail.com'));}
   }catch{btn.textContent='Submit application \u2192';btn.disabled=false;alert('Something went wrong. Please try again or email admin.omakase@gmail.com');}
 }
 
