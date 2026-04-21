@@ -30,7 +30,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--sans);display:fl
 .slides-outer{flex:1;overflow:hidden;position:relative;}
 .slides-inner{display:flex;height:100%;transition:transform 0.45s cubic-bezier(0.4,0,0.2,1);}
 
-.slide{min-width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 40px;overflow-y:auto;}
+.slide{min-width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 40px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .q-wrap{width:100%;max-width:540px;}
 
 .q-kicker{font-family:var(--sans);font-size:10px;font-weight:500;letter-spacing:0.22em;color:var(--ink-faint);text-transform:uppercase;margin-bottom:20px;}
@@ -71,7 +71,7 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 
 /* RANK */
 .rank-list{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
-.rank-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border:0.5px solid var(--rule);border-radius:2px;background:var(--cream);cursor:grab;transition:border-color 0.12s;user-select:none;}
+.rank-item{display:flex;align-items:center;gap:12px;padding:10px 14px;border:0.5px solid var(--rule);border-radius:2px;background:var(--cream);cursor:grab;transition:border-color 0.12s;user-select:none;touch-action:none;}
 .rank-item:active{cursor:grabbing;}
 .rank-item.dragging{opacity:0.4;}
 .rank-item.drag-over{border-color:var(--gold);}
@@ -114,12 +114,10 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 
 @media(max-width:600px){
   .top-bar,.bottom-bar{padding:0 20px;}
-  .slide{padding:32px 20px;}
+  .slide{padding:24px 20px 16px;justify-content:flex-start;padding-top:40px;}
   .scale-row{gap:6px;}
   .sb{padding:11px 2px;font-size:17px;}
   .btn-next{padding:11px 20px;}
-  .otp-wrap{gap:7px;}
-  .otp-box{width:38px;height:46px;font-size:20px;}
 }
 </style>
 </head>
@@ -266,7 +264,7 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Southeast Asian">Southeast Asian</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Mixed">Mixed</label>
     <label class="chip"><input type="checkbox" name="ethnicity[]" value="Prefer not to say">Prefer not to say</label>
-    <label class="chip" id="chip-other-eth" onclick="toggleOtherEth(this)"><input type="checkbox" name="ethnicity[]" value="Other" id="cb-other-eth">Other</label>
+    <label class="chip" id="chip-other-eth" onclick="toggleOtherEth(event)"><input type="checkbox" name="ethnicity[]" value="Other" id="cb-other-eth">Other</label>
   </div>
   <div id="other-eth-wrap" style="display:none;margin-top:14px;">
     <input type="text" id="other-eth-input" name="ethnicity_other" placeholder="Please specify..." onkeydown="ek(event)">
@@ -470,8 +468,8 @@ input::placeholder,textarea::placeholder{color:var(--rule);}
 
 <!-- 29: CONSENT -->
 <div class="slide"><div class="q-wrap">
-  <div class="q-kicker">One last thing</div>
-  <div class="q-title">Almost there</div>
+  <div class="q-kicker">Almost there</div>
+  <div class="q-title">One last thing</div>
   <div class="consent-body">By submitting this application you confirm you are 18 or older and a current student at Western University, and agree to Omakase's Data Principles and Protection Policy. Before any AI analysis takes place, all personally identifiable information — your name, email, and social media handles — is removed. The AI sees only what you think, value, and feel, never who you are. The raw data is handled exclusively by one Western student following the highest standards of personal data protection.</div>
   <label class="consent-row">
     <input type="checkbox" id="consent" name="consent" value="agreed">
@@ -558,8 +556,11 @@ function val(n){
 function se(id){const el=document.getElementById(id);if(el)el.classList.add('on');}
 function clrErr(){document.querySelectorAll('.q-err').forEach(e=>e.classList.remove('on'));}
 
-function toggleOtherEth(label){
+function toggleOtherEth(e){
+  // prevent label default so we control the toggle
+  e.preventDefault();
   const cb=document.getElementById('cb-other-eth');
+  const label=document.getElementById('chip-other-eth');
   cb.checked=!cb.checked;
   label.classList.toggle('on',cb.checked);
   const wrap=document.getElementById('other-eth-wrap');
@@ -586,38 +587,93 @@ function ek(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();adv();}}
 
 // CHIPS
 document.querySelectorAll('.chip input').forEach(inp=>{
+  if(inp.id==='cb-other-eth')return; // handled by toggleOtherEth
   inp.addEventListener('change',function(){
     if(this.type==='radio')document.querySelectorAll('input[name="'+this.name+'"]').forEach(r=>r.closest('.chip').classList.remove('on'));
     this.closest('.chip').classList.toggle('on',this.checked);
   });
 });
 
-// DRAG RANK
+// DRAG RANK — desktop + mobile
 function initRank(listId,hiddenId){
   const list=document.getElementById(listId);
-  let dragged=null;
+  let dragged=null,placeholder=null,startY=0,offsetY=0;
+
+  function getItems(){return [...list.querySelectorAll('.rank-item')];}
+
+  // DESKTOP
   list.querySelectorAll('.rank-item').forEach(item=>{
-    item.addEventListener('dragstart',function(){dragged=this;this.classList.add('dragging');});
-    item.addEventListener('dragend',function(){this.classList.remove('dragging');updateRank(listId,hiddenId);});
-    item.addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag-over');});
+    item.addEventListener('dragstart',function(e){
+      dragged=this;
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed='move';
+    });
+    item.addEventListener('dragend',function(){
+      this.classList.remove('dragging');
+      list.querySelectorAll('.rank-item').forEach(i=>i.classList.remove('drag-over'));
+      dragged=null;
+      updateRank(listId,hiddenId);
+    });
+    item.addEventListener('dragover',function(e){
+      e.preventDefault();
+      list.querySelectorAll('.rank-item').forEach(i=>i.classList.remove('drag-over'));
+      this.classList.add('drag-over');
+    });
     item.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
     item.addEventListener('drop',function(e){
       e.preventDefault();this.classList.remove('drag-over');
       if(dragged&&dragged!==this){
-        const items=[...list.querySelectorAll('.rank-item')];
-        const di=items.indexOf(dragged),ti=items.indexOf(this);
+        const items=getItems(),di=items.indexOf(dragged),ti=items.indexOf(this);
         if(di<ti)list.insertBefore(dragged,this.nextSibling);
         else list.insertBefore(dragged,this);
         updateRank(listId,hiddenId);
       }
     });
-    // touch support
-    item.addEventListener('touchstart',function(e){dragged=this;this.classList.add('dragging');},{passive:true});
+  });
+
+  // MOBILE TOUCH
+  list.querySelectorAll('.rank-item').forEach(item=>{
+    item.addEventListener('touchstart',function(e){
+      dragged=this;
+      const touch=e.touches[0];
+      const rect=this.getBoundingClientRect();
+      offsetY=touch.clientY-rect.top;
+      startY=touch.clientY;
+      this.classList.add('dragging');
+      // create placeholder
+      placeholder=document.createElement('div');
+      placeholder.style.cssText='height:'+this.offsetHeight+'px;border:1px dashed var(--rule);border-radius:2px;margin:0;opacity:0.4;';
+      list.insertBefore(placeholder,this.nextSibling);
+    },{passive:true});
+
+    item.addEventListener('touchmove',function(e){
+      e.preventDefault();
+      if(!dragged)return;
+      const touch=e.touches[0];
+      const listRect=list.getBoundingClientRect();
+      const items=getItems().filter(i=>i!==dragged&&i!==placeholder);
+      let insertBefore=null;
+      for(const it of items){
+        const r=it.getBoundingClientRect();
+        const mid=r.top+r.height/2;
+        if(touch.clientY<mid){insertBefore=it;break;}
+      }
+      if(insertBefore)list.insertBefore(placeholder,insertBefore);
+      else list.appendChild(placeholder);
+    },{passive:false});
+
     item.addEventListener('touchend',function(){
+      if(!dragged)return;
       this.classList.remove('dragging');
+      if(placeholder&&placeholder.parentNode){
+        list.insertBefore(dragged,placeholder);
+        placeholder.parentNode.removeChild(placeholder);
+      }
+      placeholder=null;dragged=null;
       updateRank(listId,hiddenId);
     });
   });
+
   updateRank(listId,hiddenId);
 }
 
@@ -641,10 +697,10 @@ async function sub(){
   document.querySelectorAll('#hf input[type=hidden]').forEach(el=>data.append(el.name,el.value));
   // add all form fields
   document.querySelectorAll('[name]').forEach(el=>{
-    if(!el.name||el.id==='consent'&&!el.checked)return;
+    if(!el.name)return;
     if(el.closest('#hf'))return;
     if((el.type==='checkbox'||el.type==='radio')&&!el.checked)return;
-    if(el.type==='hidden'&&el.closest('#hf'))return;
+    if(el.id==='consent')return; // handled separately below
     data.append(el.name,el.value);
   });
   // add consent explicitly
